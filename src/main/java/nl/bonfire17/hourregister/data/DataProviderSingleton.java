@@ -40,4 +40,16 @@ public class DataProviderSingleton {
     public ArrayList<Department> getDepartments(){
         return this.departments;
     }
+
+    public void deleteDepartment(int index){
+        this.departments.remove(index);
+    }
+
+    public void deleteDepartmentById(String id){
+        for(int i = 0; i < this.departments.size(); i++){
+            if(this.departments.get(i).id == id){
+                this.departments.remove(i);
+            }
+        }
+    }
 }
