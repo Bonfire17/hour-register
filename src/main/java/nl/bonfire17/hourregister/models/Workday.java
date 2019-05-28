@@ -11,6 +11,13 @@ public class Workday {
     private LocalDateTime startTime, endTime;
     private LocalTime breakTime;
 
+    public Workday(LocalDateTime startTime, LocalDateTime endTime, LocalTime breakTime){
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.breakTime = breakTime;
+        id = UUID.randomUUID().toString();
+    }
+
     public Workday(LocalDateTime startTime){
         this.startTime = startTime;
         id = UUID.randomUUID().toString();

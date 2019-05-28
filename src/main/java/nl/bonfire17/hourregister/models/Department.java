@@ -23,6 +23,23 @@ public class Department {
         id = UUID.randomUUID().toString();
     }
 
+    public void addUser(User user){
+        this.users.add(user);
+    }
+
+    public User getUser(int index){
+        return this.users.get(index);
+    }
+
+    public User getUserById(String id){
+        for(int i = 0; i < this.users.size(); i++){
+            if(id == this.users.get(i).id){
+                return this.users.get(i);
+            }
+        }
+        return null;
+    }
+
     //Getters & Setters
 
     public String getName() {
