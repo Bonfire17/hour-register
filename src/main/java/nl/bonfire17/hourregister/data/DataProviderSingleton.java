@@ -36,4 +36,8 @@ public class DataProviderSingleton {
         if(instance == null)createInstance();
         return instance;
     }
+
+    public ArrayList<Department> getDepartments(){
+        return this.departments;
+    }
 }
