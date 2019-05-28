@@ -1,4 +1,4 @@
-package nl.bonfire17.hourregister.Models;
+package nl.bonfire17.hourregister.models;
 
 import java.util.ArrayList;
 import java.util.UUID;

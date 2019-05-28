@@ -1,4 +1,4 @@
-package nl.bonfire17.hourregister.Models;
+package nl.bonfire17.hourregister.models;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,11 +10,11 @@ public class User {
 
     public String id;
 
-    private String username, email, firstname, lastname, password;
+    protected String username, email, firstname, lastname, password;
 
-    private Date dateOfBirth;
-    private ArrayList<Workday> workdays;
-    private Workday currentWorkday;
+    protected Date dateOfBirth;
+    protected ArrayList<Workday> workdays;
+    protected Workday currentWorkday;
 
     public void User(String username, String email, String firstname, String lastname, String password, Date dateOfBirth){
         this.username = username;
@@ -45,6 +45,11 @@ public class User {
             currentWorkday = null;
             return true;
         }
+        return false;
+    }
+
+    //Check if the user has adminRights, needs to override for administrator
+    public boolean hasAdminRights(){
         return false;
     }
 
