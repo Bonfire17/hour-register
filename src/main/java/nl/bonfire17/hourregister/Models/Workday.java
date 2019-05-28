@@ -2,14 +2,21 @@ package nl.bonfire17.hourregister.Models;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.UUID;
 
 public class Workday {
+
+    //A random id to identify a instance
+    public String id;
 
     private LocalDateTime startTime, endTime;
     private LocalTime breakTime;
 
     public Workday(LocalDateTime startTime){
         this.startTime = startTime;
+
+        //Generate a random id
+        id = UUID.randomUUID().toString();
     }
 
     public void clockIn(LocalDateTime startTime){
@@ -21,6 +28,7 @@ public class Workday {
         this.breakTime = breakTime;
     }
 
+    //Check if this workday is finished.
     public boolean isWorking(){
         if(startTime != null && endTime == null){
             return true;
