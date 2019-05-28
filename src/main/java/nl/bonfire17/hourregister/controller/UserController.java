@@ -1,6 +1,7 @@
 package nl.bonfire17.hourregister.controller;
 
 import nl.bonfire17.hourregister.data.DataProviderSingleton;
+import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 public class UserController {
 
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
+    private ArrayList<Administrator> administrators = DataProviderSingleton.getInstance().getAdministrators();
 
     @GetMapping
     @ResponseBody
@@ -83,6 +85,11 @@ public class UserController {
                 if (departments.get(i).getUsers().get(j).getId().equals(id)) {
                     departments.get(i).getUsers().remove(j);
                 }
+            }
+        }
+        for (int i = 0; i < administrators.size(); i++) {
+            if (administrators.get(i).getId().equals(id)) {
+                administrators.remove(i);
             }
         }
     }

@@ -46,7 +46,7 @@ public class WorkdayController {
         for (int i = 0; i < departments.size(); i++) {
             for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
                 if (departments.get(i).getUsers().get(j).getId().equals(userId)) {
-                    if (departments.get(i).getUsers().get(j).clockIn() == false) {
+                    if (departments.get(i).getUsers().get(j).clockIn(userId) == false) {
                         departments.get(i).getUsers().get(j).clockOut(breakTime);
                     }
                 }

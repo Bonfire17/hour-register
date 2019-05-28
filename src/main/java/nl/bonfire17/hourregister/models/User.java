@@ -35,9 +35,9 @@ public class User {
     }
 
     //Clock user in, return if successful
-    public boolean clockIn(){
+    public boolean clockIn(String userId){
         if(currentWorkday == null) {
-            workdays.add(new Workday(LocalDateTime.now()));
+            workdays.add(new Workday(LocalDateTime.now(), userId));
             currentWorkday = workdays.get(workdays.size() - 1);
             return true;
         }

@@ -19,8 +19,9 @@ public class Workday {
         id = UUID.randomUUID().toString();
     }
 
-    public Workday(LocalDateTime startTime){
+    public Workday(LocalDateTime startTime, String userId){
         this.startTime = startTime;
+        this.userId = userId;
         id = UUID.randomUUID().toString();
     }
 
