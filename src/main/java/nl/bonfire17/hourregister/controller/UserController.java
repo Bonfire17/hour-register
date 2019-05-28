@@ -23,9 +23,9 @@ public class UserController {
         ArrayList<User> users = new ArrayList<>();
         for (int i = 0; i < departments.size(); i++) {
             if (departments.get(i).getId().equals(departmentId))
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                users.add(departments.get(i).getUsers().get(j));
-            }
+                for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
+                    users.add(departments.get(i).getUsers().get(j));
+                }
         }
         return users;
     }
@@ -79,17 +79,21 @@ public class UserController {
     @ResponseBody
     public void deleteUser(@RequestBody User user) {
         String id = user.getId();
+        boolean isAdmin = false;
 
         for (int i = 0; i < departments.size(); i++) {
             for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
                 if (departments.get(i).getUsers().get(j).getId().equals(id)) {
+                    isAdmin = departments.get(i).getUsers().get(j).hasAdminRights();
                     departments.get(i).getUsers().remove(j);
                 }
             }
         }
-        for (int i = 0; i < administrators.size(); i++) {
-            if (administrators.get(i).getId().equals(id)) {
-                administrators.remove(i);
+        if (isAdmin) {
+            for (int i = 0; i < administrators.size(); i++) {
+                if (administrators.get(i).getId().equals(id)) {
+                    administrators.remove(i);
+                }
             }
         }
     }

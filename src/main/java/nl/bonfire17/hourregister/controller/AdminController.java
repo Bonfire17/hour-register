@@ -56,5 +56,11 @@ public class AdminController {
     @ResponseBody
     public void addAdmin(@RequestBody Administrator administrator) {
         administrators.add(administrator);
+        String departmentId = administrator.getDepartmentId();
+        for (int i = 0; i < departments.size(); i++) {
+            if (departments.get(i).getId().equals(departmentId)) {
+                departments.get(i).addUser(administrator);
+            }
+        }
     }
 }
