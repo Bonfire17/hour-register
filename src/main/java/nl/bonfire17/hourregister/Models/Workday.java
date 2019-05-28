@@ -6,7 +6,6 @@ import java.util.UUID;
 
 public class Workday {
 
-    //A random id to identify a instance
     public String id;
 
     private LocalDateTime startTime, endTime;
@@ -14,8 +13,6 @@ public class Workday {
 
     public Workday(LocalDateTime startTime){
         this.startTime = startTime;
-
-        //Generate a random id
         id = UUID.randomUUID().toString();
     }
 
