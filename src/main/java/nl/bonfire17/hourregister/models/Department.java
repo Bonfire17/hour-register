@@ -19,6 +19,10 @@ public class Department {
         users = new ArrayList<User>();
     }
 
+    public Department(){
+        id = UUID.randomUUID().toString();
+    }
+
     //Getters & Setters
 
     public String getName() {

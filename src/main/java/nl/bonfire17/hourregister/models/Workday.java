@@ -16,6 +16,10 @@ public class Workday {
         id = UUID.randomUUID().toString();
     }
 
+    public Workday(){
+        id = UUID.randomUUID().toString();
+    }
+
     public void clockIn(LocalDateTime startTime){
         this.startTime = startTime;
     }

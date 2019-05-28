@@ -28,6 +28,10 @@ public class User {
         workdays = new ArrayList<Workday>();
     }
 
+    public User(){
+        id = UUID.randomUUID().toString();
+    }
+
     //Clock user in, return if successful
     public boolean clockIn(){
         if(currentWorkday == null) {
