@@ -16,7 +16,7 @@ public class User {
     protected ArrayList<Workday> workdays;
     protected Workday currentWorkday;
 
-    public void User(String username, String email, String firstname, String lastname, String password, Date dateOfBirth){
+    public User(String username, String email, String firstname, String lastname, String password, Date dateOfBirth){
         this.username = username;
         this.email = email;
         this.firstname = firstname;
