@@ -21,10 +21,10 @@ public class DataProviderSingleton {
 
         Department dep;
         dep = new Department("Restaurant Bediening", "Alle restaurant medewerkers");
-        dep.addUser(new User("Bonfire17", "bertus@gmail.com", "Bert", "Bonkers", "test123", new Date(898646400)));
-        dep.addUser(new User("JJVoort", "jj@hotmail.com", "Jay", "Jay", "wachtwoord", new Date(955152000)));
+        dep.addUser(new User("Bonfire17", "bertus@gmail.com", "Bert", "Bonkers", "test123", new Date(898646400), dep.getId()));
+        dep.addUser(new User("JJVoort", "jj@hotmail.com", "Jay", "Jay", "wachtwoord", new Date(955152000), dep.getId()));
         LocalDateTime date = LocalDateTime.of(2019, 05, 28, 12, 0, 0);
-        dep.getUser(0).getWorkdays().add(new Workday(date, date.plusHours(3), LocalTime.of(0, 15)));
+        dep.getUser(0).getWorkdays().add(new Workday(date, date.plusHours(3), LocalTime.of(0, 15), dep.getUser(0).getId()));
         departments.add(dep);
     }
 

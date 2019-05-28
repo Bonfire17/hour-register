@@ -2,6 +2,7 @@ package nl.bonfire17.hourregister.controller;
 
 import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Department;
+import nl.bonfire17.hourregister.models.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,24 +16,74 @@ public class UserController {
 
     @GetMapping
     @ResponseBody
-    public String getUsers() {
-        return "test";
+    public ArrayList<User> getUsers(@RequestBody Department department) {
+        String departmentId = department.getId();
+        ArrayList<User> users = new ArrayList<>();
+        for (int i = 0; i < departments.size(); i++) {
+            if (departments.get(i).getId().equals(departmentId))
+            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
+                users.add(departments.get(i).getUsers().get(j));
+            }
+        }
+        return users;
     }
 
     @PostMapping
     @ResponseBody
-    public void addUser() {
-
+    public void addUser(@RequestBody User user) {
+        String departmentId = user.getDepartmentId();
+        for (int i = 0; i < departments.size(); i++) {
+            if (departments.get(i).getId().equals(departmentId)) {
+                departments.get(i).addUser(user);
+            }
+        }
     }
 
     @PutMapping
     @ResponseBody
-    public void editUser() {
+    public void editUser(@RequestBody User user) {
+        String id = user.getId();
 
+        for (int i = 0; i < departments.size(); i++) {
+            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
+                if (departments.get(i).getUsers().get(j).getId().equals(id)) {
+                    if (!user.getUsername().equals(null)) {
+                        departments.get(i).getUsers().get(j).setUsername(user.getUsername());
+                    }
+                    if (!user.getEmail().equals(null)) {
+                        departments.get(i).getUsers().get(j).setEmail(user.getEmail());
+                    }
+                    if (!user.getFirstname().equals(null)) {
+                        departments.get(i).getUsers().get(j).setFirstname(user.getFirstname());
+                    }
+                    if (!user.getLastname().equals(null)) {
+                        departments.get(i).getUsers().get(j).setLastname(user.getLastname());
+                    }
+                    if (!user.getPassword().equals(null)) {
+                        departments.get(i).getUsers().get(j).setPassword(user.getPassword());
+                    }
+                    if (!user.getDateOfBirth().equals(null)) {
+                        departments.get(i).getUsers().get(j).setDateOfBirth(user.getDateOfBirth());
+                    }
+                    if (!user.getDepartmentId().equals(null)) {
+                        departments.get(i).getUsers().get(j).setDepartmentId(user.getDepartmentId());
+                    }
+                }
+            }
+        }
     }
 
     @DeleteMapping
     @ResponseBody
-    public void deleteUser() {
+    public void deleteUser(@RequestBody User user) {
+        String id = user.getId();
+
+        for (int i = 0; i < departments.size(); i++) {
+            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
+                if (departments.get(i).getUsers().get(j).getId().equals(id)) {
+                    departments.get(i).getUsers().remove(j);
+                }
+            }
+        }
     }
 }

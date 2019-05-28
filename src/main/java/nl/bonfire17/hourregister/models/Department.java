@@ -21,6 +21,7 @@ public class Department {
 
     public Department(){
         id = UUID.randomUUID().toString();
+        users = new ArrayList<User>();
     }
 
     public void addUser(User user){
@@ -66,5 +67,8 @@ public class Department {
         this.users = users;
     }
 
+    public String getId() {
+        return id;
+    }
     //End Getters & Setters
 }

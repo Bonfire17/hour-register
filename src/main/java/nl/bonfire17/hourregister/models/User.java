@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class User {
 
-    public String id;
+    public String id, departmentId;
 
     protected String username, email, firstname, lastname, password;
 
@@ -16,13 +16,14 @@ public class User {
     protected ArrayList<Workday> workdays;
     protected Workday currentWorkday;
 
-    public User(String username, String email, String firstname, String lastname, String password, Date dateOfBirth){
+    public User(String username, String email, String firstname, String lastname, String password, Date dateOfBirth, String departmentId){
         this.username = username;
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
         this.password = password;
         this.dateOfBirth = dateOfBirth;
+        this.departmentId = departmentId;
 
         id = UUID.randomUUID().toString();
         workdays = new ArrayList<Workday>();
@@ -30,6 +31,7 @@ public class User {
 
     public User(){
         id = UUID.randomUUID().toString();
+        workdays = new ArrayList<Workday>();
     }
 
     //Clock user in, return if successful
@@ -113,6 +115,18 @@ public class User {
 
     public void setWorkdays(ArrayList<Workday> workdays) {
         this.workdays = workdays;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId;
     }
 
     //End Getters & Setters
