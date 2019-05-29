@@ -4,6 +4,7 @@ import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
+import nl.bonfire17.hourregister.wrappers.AdminDepartmentWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,21 +57,11 @@ public class AdminController {
     @ResponseBody
     public void addAdmin(@RequestBody AdminDepartmentWrapper adw) {
         administrators.add(adw.administrator);
-        String departmentId = adw.department.getId();
+        String departmentId = adw.department;
         for (int i = 0; i < departments.size(); i++) {
             if (departments.get(i).getId().equals(departmentId)) {
                 departments.get(i).addUser(adw.administrator);
             }
         }
     }
-    class AdminDepartmentWrapper{
-        public Administrator administrator;
-        public Department department;
-
-        public AdminDepartmentWrapper(Administrator administrator, Department department) {
-            this.administrator = administrator;
-            this.department = department;
-        }
-    }
-
 }

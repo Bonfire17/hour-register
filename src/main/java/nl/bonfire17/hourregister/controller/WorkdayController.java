@@ -4,6 +4,7 @@ import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.models.Workday;
+import nl.bonfire17.hourregister.wrappers.WorkdayUserWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +38,7 @@ public class WorkdayController {
     @PostMapping
     @ResponseBody
     public void addWorkday(@RequestBody WorkdayUserWrapper wuw) {
-        String userId = wuw.user.getId();
+        String userId = wuw.user;
         LocalTime breakTime = LocalTime.of(0,0,0);
 
         if (wuw.workday.getBreakTime() != null) {
@@ -92,16 +93,6 @@ public class WorkdayController {
                     }
                 }
             }
-        }
-    }
-
-    class WorkdayUserWrapper{
-        public Workday workday;
-        public User user;
-
-        public WorkdayUserWrapper(Workday workday, User user) {
-            this.workday = workday;
-            this.user = user;
         }
     }
 }

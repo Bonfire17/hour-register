@@ -2,6 +2,7 @@ package nl.bonfire17.hourregister.controller;
 
 import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Department;
+import nl.bonfire17.hourregister.models.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,14 @@ public class DepartmentController {
                 }
             }
         }
+    }
+
+    @PutMapping(path = "/transfer")
+    @ResponseBody
+    public void transferUser(Department department, Department newDepartment, User user) {
+        String oldId = department.getId();
+        String newId = newDepartment.getId();
+        String userId = user.getId();
     }
 
     @DeleteMapping

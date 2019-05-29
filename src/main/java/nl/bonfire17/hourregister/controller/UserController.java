@@ -4,6 +4,7 @@ import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
+import nl.bonfire17.hourregister.wrappers.UserDepartmentWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class UserController {
     @PostMapping
     @ResponseBody
     public void addUser(@RequestBody UserDepartmentWrapper udw) {
-        String departmentId = udw.department.getId();
+        String departmentId = udw.department;
         for (int i = 0; i < departments.size(); i++) {
             if (departments.get(i).getId().equals(departmentId)) {
                 departments.get(i).addUser(udw.user);
@@ -95,13 +96,5 @@ public class UserController {
         }
     }
 
-    class UserDepartmentWrapper{
-        public User user;
-        public Department department;
 
-        public UserDepartmentWrapper(User user, Department department){
-            this.user = user;
-            this.department = department;
-        }
-    }
 }

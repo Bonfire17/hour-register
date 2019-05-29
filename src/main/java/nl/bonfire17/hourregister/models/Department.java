@@ -24,6 +24,10 @@ public class Department {
         users = new ArrayList<User>();
     }
 
+    public Department(String id) {
+        this.id = id;
+    }
+
     public void addUser(User user){
         this.users.add(user);
     }
