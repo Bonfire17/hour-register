@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class User {
 
-    public String id, departmentId;
+    public String id;
 
     protected String username, email, firstname, lastname, password;
 
@@ -16,14 +16,13 @@ public class User {
     protected ArrayList<Workday> workdays;
     protected Workday currentWorkday;
 
-    public User(String username, String email, String firstname, String lastname, String password, Date dateOfBirth, String departmentId){
+    public User(String username, String email, String firstname, String lastname, String password, Date dateOfBirth){
         this.username = username;
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
         this.password = password;
         this.dateOfBirth = dateOfBirth;
-        this.departmentId = departmentId;
 
         id = UUID.randomUUID().toString();
         workdays = new ArrayList<Workday>();
@@ -37,7 +36,7 @@ public class User {
     //Clock user in, return if successful
     public boolean clockIn(String userId){
         if(currentWorkday == null) {
-            workdays.add(new Workday(LocalDateTime.now(), userId));
+            workdays.add(new Workday(LocalDateTime.now()));
             currentWorkday = workdays.get(workdays.size() - 1);
             return true;
         }
@@ -52,6 +51,10 @@ public class User {
             return true;
         }
         return false;
+    }
+
+    public void addWorkday(Workday workday){
+        workdays.add(workday);
     }
 
     //Check if the user has adminRights, needs to override for administrator
@@ -119,14 +122,6 @@ public class User {
 
     public String getId() {
         return id;
-    }
-
-    public String getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(String departmentId) {
-        this.departmentId = departmentId;
     }
 
     //End Getters & Setters

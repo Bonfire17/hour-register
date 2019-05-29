@@ -6,22 +6,20 @@ import java.util.UUID;
 
 public class Workday {
 
-    public String id, userId;
+    public String id;
 
     private LocalDateTime startTime, endTime;
     private LocalTime breakTime;
 
-    public Workday(LocalDateTime startTime, LocalDateTime endTime, LocalTime breakTime, String userId){
+    public Workday(LocalDateTime startTime, LocalDateTime endTime, LocalTime breakTime){
         this.startTime = startTime;
         this.endTime = endTime;
         this.breakTime = breakTime;
-        this.userId = userId;
         id = UUID.randomUUID().toString();
     }
 
-    public Workday(LocalDateTime startTime, String userId){
+    public Workday(LocalDateTime startTime){
         this.startTime = startTime;
-        this.userId = userId;
         id = UUID.randomUUID().toString();
     }
 
@@ -74,10 +72,6 @@ public class Workday {
 
     public String getId() {
         return id;
-    }
-
-    public String getUserId() {
-        return userId;
     }
 
     //End Getters & Setters
