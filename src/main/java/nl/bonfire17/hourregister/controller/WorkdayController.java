@@ -7,6 +7,7 @@ import nl.bonfire17.hourregister.models.Workday;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.crypto.Data;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -35,12 +36,12 @@ public class WorkdayController {
 
     @PostMapping
     @ResponseBody
-    public void addWorkday(@RequestBody Workday workday) {
-        String userId = workday.getUserId();
+    public void addWorkday(@RequestBody WorkdayUserWrapper wuw) {
+        String userId = wuw.user.getId();
         LocalTime breakTime = LocalTime.of(0,0,0);
 
-        if (workday.getBreakTime() != null) {
-            breakTime = workday.getBreakTime();
+        if (wuw.workday.getBreakTime() != null) {
+            breakTime = wuw.workday.getBreakTime();
         }
 
         for (int i = 0; i < departments.size(); i++) {
@@ -92,5 +93,10 @@ public class WorkdayController {
                 }
             }
         }
+    }
+
+    class WorkdayUserWrapper{
+        public Workday workday;
+        public User user;
     }
 }

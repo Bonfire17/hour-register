@@ -54,13 +54,18 @@ public class AdminController {
 
     @PostMapping
     @ResponseBody
-    public void addAdmin(@RequestBody Administrator administrator) {
-        administrators.add(administrator);
-        String departmentId = administrator.getDepartmentId();
+    public void addAdmin(@RequestBody AdminDepartmentWrapper adw) {
+        administrators.add(adw.administrator);
+        String departmentId = adw.department.getId();
         for (int i = 0; i < departments.size(); i++) {
             if (departments.get(i).getId().equals(departmentId)) {
-                departments.get(i).addUser(administrator);
+                departments.get(i).addUser(adw.administrator);
             }
         }
     }
+    class AdminDepartmentWrapper{
+        public Administrator administrator;
+        public Department department;
+    }
+
 }

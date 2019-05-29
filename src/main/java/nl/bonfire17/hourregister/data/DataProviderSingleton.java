@@ -20,6 +20,9 @@ public class DataProviderSingleton {
     private ArrayList<Workday> workdays;
     private ArrayList<Administrator> administrators;
 
+    public static String USER_ID;
+    public static String DEPARTMENT_ID;
+
     private DataProviderSingleton() {
         departments = new ArrayList<Department>();
         users = new ArrayList<User>();
@@ -28,7 +31,11 @@ public class DataProviderSingleton {
 
         departments.add(new Department("Restaurant Bediening", "Alle restaurant medewerkers"));
 
+        DEPARTMENT_ID = departments.get(0).getId();
+
         users.add(new User("Bonfire17", "bertus@gmail.com", "Bert", "Bonkers", "test123", new Date(898646400)));
+
+        USER_ID = users.get(0).getId();
         users.add(new User("JJVoort", "jj@hotmail.com", "Jay", "Jay", "wachtwoord", new Date(955152000)));
         departments.get(0).addUser(users.get(0));
         departments.get(0).addUser(users.get(1));

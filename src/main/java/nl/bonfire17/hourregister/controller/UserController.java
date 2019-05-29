@@ -32,11 +32,11 @@ public class UserController {
 
     @PostMapping
     @ResponseBody
-    public void addUser(@RequestBody User user) {
-        String departmentId = user.getDepartmentId();
+    public void addUser(@RequestBody UserDepartmentWrapper udw) {
+        String departmentId = udw.user.getId();
         for (int i = 0; i < departments.size(); i++) {
             if (departments.get(i).getId().equals(departmentId)) {
-                departments.get(i).addUser(user);
+                departments.get(i).addUser(udw.user);
             }
         }
     }
@@ -67,9 +67,6 @@ public class UserController {
                     if (!user.getDateOfBirth().equals(null)) {
                         departments.get(i).getUsers().get(j).setDateOfBirth(user.getDateOfBirth());
                     }
-                    if (!user.getDepartmentId().equals(null)) {
-                        departments.get(i).getUsers().get(j).setDepartmentId(user.getDepartmentId());
-                    }
                 }
             }
         }
@@ -96,5 +93,10 @@ public class UserController {
                 }
             }
         }
+    }
+
+    class UserDepartmentWrapper{
+        public User user;
+        public Department department;
     }
 }
