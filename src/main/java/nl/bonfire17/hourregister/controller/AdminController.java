@@ -66,6 +66,11 @@ public class AdminController {
     class AdminDepartmentWrapper{
         public Administrator administrator;
         public Department department;
+
+        public AdminDepartmentWrapper(Administrator administrator, Department department) {
+            this.administrator = administrator;
+            this.department = department;
+        }
     }
 
 }

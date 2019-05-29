@@ -98,5 +98,10 @@ public class WorkdayController {
     class WorkdayUserWrapper{
         public Workday workday;
         public User user;
+
+        public WorkdayUserWrapper(Workday workday, User user) {
+            this.workday = workday;
+            this.user = user;
+        }
     }
 }
