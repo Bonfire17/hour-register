@@ -16,6 +16,7 @@ public class UserController {
 
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
     private ArrayList<Administrator> administrators = DataProviderSingleton.getInstance().getAdministrators();
+    private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
 
     @GetMapping
     @ResponseBody
@@ -23,10 +24,9 @@ public class UserController {
         String departmentId = department.getId();
         ArrayList<User> users = new ArrayList<>();
         for (int i = 0; i < departments.size(); i++) {
-            if (departments.get(i).getId().equals(departmentId))
-                for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                    users.add(departments.get(i).getUsers().get(j));
-                }
+            if (departments.get(i).getId().equals(departmentId)) {
+                return departments.get(i).getUsers();
+            }
         }
         return users;
     }
@@ -37,9 +37,10 @@ public class UserController {
         String departmentId = udw.department;
         for (int i = 0; i < departments.size(); i++) {
             if (departments.get(i).getId().equals(departmentId)) {
-                departments.get(i).addUser(udw.user);
+                departments.get(i).getUsers().add(udw.user);
             }
         }
+        users.add(udw.user);
     }
 
     @PutMapping
@@ -47,27 +48,25 @@ public class UserController {
     public void editUser(@RequestBody User user) {
         String id = user.getId();
 
-        for (int i = 0; i < departments.size(); i++) {
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                if (departments.get(i).getUsers().get(j).getId().equals(id)) {
-                    if (!user.getUsername().equals(null)) {
-                        departments.get(i).getUsers().get(j).setUsername(user.getUsername());
-                    }
-                    if (!user.getEmail().equals(null)) {
-                        departments.get(i).getUsers().get(j).setEmail(user.getEmail());
-                    }
-                    if (!user.getFirstname().equals(null)) {
-                        departments.get(i).getUsers().get(j).setFirstname(user.getFirstname());
-                    }
-                    if (!user.getLastname().equals(null)) {
-                        departments.get(i).getUsers().get(j).setLastname(user.getLastname());
-                    }
-                    if (!user.getPassword().equals(null)) {
-                        departments.get(i).getUsers().get(j).setPassword(user.getPassword());
-                    }
-                    if (!user.getDateOfBirth().equals(null)) {
-                        departments.get(i).getUsers().get(j).setDateOfBirth(user.getDateOfBirth());
-                    }
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(id)) {
+                if (!user.getUsername().equals(null)) {
+                    users.get(i).setUsername(user.getUsername());
+                }
+                if (!user.getEmail().equals(null)) {
+                    users.get(i).setEmail(user.getEmail());
+                }
+                if (!user.getFirstname().equals(null)) {
+                    users.get(i).setFirstname(user.getFirstname());
+                }
+                if (!user.getLastname().equals(null)) {
+                    users.get(i).setLastname(user.getLastname());
+                }
+                if (!user.getPassword().equals(null)) {
+                    users.get(i).setPassword(user.getPassword());
+                }
+                if (!user.getDateOfBirth().equals(null)) {
+                    users.get(i).setDateOfBirth(user.getDateOfBirth());
                 }
             }
         }
@@ -75,23 +74,28 @@ public class UserController {
 
     @DeleteMapping
     @ResponseBody
-    public void deleteUser(@RequestBody User user) {
-        String id = user.getId();
-        boolean isAdmin = false;
+    public void deleteUser(@RequestBody UserDepartmentWrapper udw) {
+        String id = udw.user.getId();
+        String departmentId = udw.department;
+
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(id)) {
+                users.remove(i);
+            }
+        }
 
         for (int i = 0; i < departments.size(); i++) {
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                if (departments.get(i).getUsers().get(j).getId().equals(id)) {
-                    isAdmin = departments.get(i).getUsers().get(j).hasAdminRights();
-                    departments.get(i).getUsers().remove(j);
+            if (departments.get(i).getId().equals(departmentId)) {
+                for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
+                    if (departments.get(i).getUsers().get(j).getId().equals(id)) {
+                        departments.get(i).getUsers().remove(j);
+                    }
                 }
             }
         }
-        if (isAdmin) {
-            for (int i = 0; i < administrators.size(); i++) {
-                if (administrators.get(i).getId().equals(id)) {
-                    administrators.remove(i);
-                }
+        for (int i = 0; i < administrators.size(); i++) {
+            if (administrators.get(i).getId().equals(id)) {
+                administrators.remove(i);
             }
         }
     }

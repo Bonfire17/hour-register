@@ -1,24 +1,26 @@
 package nl.bonfire17.hourregister.wrappers;
 
-import nl.bonfire17.hourregister.models.Workday;
+import java.time.LocalTime;
 
 public class WorkdayUserWrapper{
-    public Workday workday;
     public String  user;
+    public LocalTime workday;
+    public String workdayId;
 
-    public WorkdayUserWrapper(Workday workday, String user) {
-        this.workday = workday;
+    public WorkdayUserWrapper(String user, LocalTime workday, String workdayId) {
         this.user = user;
+        this.workday = workday;
+        this.workdayId = workdayId;
     }
 
     public WorkdayUserWrapper() {
     }
 
-    public Workday getWorkday() {
+    public LocalTime getWorkday() {
         return workday;
     }
 
-    public void setWorkday(Workday workday) {
+    public void setWorkday(LocalTime workday) {
         this.workday = workday;
     }
 
@@ -28,5 +30,13 @@ public class WorkdayUserWrapper{
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public String getWorkdayId() {
+        return workdayId;
+    }
+
+    public void setWorkdayId(String workdayId) {
+        this.workdayId = workdayId;
     }
 }

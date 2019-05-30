@@ -16,20 +16,17 @@ import java.util.ArrayList;
 @RequestMapping("/workday")
 public class WorkdayController {
 
-    private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
+    private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
+    private ArrayList<Workday> workdays = DataProviderSingleton.getInstance().getWorkdays();
 
     @GetMapping
     @ResponseBody
     public ArrayList<Workday> getWorkdays(@RequestBody User user) {
         String userId = user.getId();
         ArrayList<Workday> workdays = new ArrayList<Workday>();
-        for (int i = 0; i < departments.size(); i++) {
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                if (departments.get(i).getUsers().get(j).getId().equals(userId)) {
-                    for (int k = 0; k < departments.get(i).getUsers().get(j).getWorkdays().size(); k++) {
-                        workdays.add(departments.get(i).getUsers().get(j).getWorkdays().get(k));
-                    }
-                }
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(userId)) {
+                return users.get(i).getWorkdays();
             }
         }
         return workdays;
@@ -41,16 +38,14 @@ public class WorkdayController {
         String userId = wuw.user;
         LocalTime breakTime = LocalTime.of(0,0,0);
 
-        if (wuw.workday.getBreakTime() != null) {
-            breakTime = wuw.workday.getBreakTime();
+        if (wuw.workday != null) {
+            breakTime = wuw.workday;
         }
 
-        for (int i = 0; i < departments.size(); i++) {
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                if (departments.get(i).getUsers().get(j).getId().equals(userId)) {
-                    if (departments.get(i).getUsers().get(j).clockIn(userId) == false) {
-                        departments.get(i).getUsers().get(j).clockOut(breakTime);
-                    }
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(userId)) {
+                if (!users.get(i).clockIn(userId)) {
+                    users.get(i).clockOut(breakTime);
                 }
             }
         }
@@ -61,35 +56,39 @@ public class WorkdayController {
     public void editWorkday(@RequestBody Workday workday) {
         String id = workday.getId();
 
-        for (int i = 0; i < departments.size(); i++) {
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                for (int k = 0; k < departments.get(i).getUsers().get(j).getWorkdays().size(); k++) {
-                    if (departments.get(i).getUsers().get(j).getWorkdays().get(k).getId().equals(id)) {
-                        if (!workday.getStartTime().equals(null)) {
-                            departments.get(i).getUsers().get(j).getWorkdays().get(k).setStartTime(workday.getStartTime());
-                        }
-                        if (!workday.getEndTime().equals(null)) {
-                            departments.get(i).getUsers().get(j).getWorkdays().get(k).setEndTime(workday.getEndTime());
-                        }
-                        if (!workday.getBreakTime().equals(null)) {
-                            departments.get(i).getUsers().get(j).getWorkdays().get(k).setBreakTime(workday.getBreakTime());
-                        }
-                    }
+        for (int i = 0; i < workdays.size(); i++) {
+            if (workdays.get(i).getId().equals(id)) {
+                if (!workday.getStartTime().equals(null)) {
+                    workdays.get(i).setStartTime(workday.getStartTime());
                 }
+                if (!workday.getEndTime().equals(null)) {
+                    workdays.get(i).setEndTime(workday.getEndTime());
+                }
+                if (!workday.getBreakTime().equals(null)) {
+                    workdays.get(i).setBreakTime(workday.getBreakTime());
+                }
+
             }
         }
     }
 
     @DeleteMapping
     @ResponseBody
-    public void deleteWorkday(@RequestBody Workday workday) {
-        String id = workday.getId();
+    public void deleteWorkday(@RequestBody WorkdayUserWrapper wuw) {
+        String id = wuw.workdayId;
+        String userId = wuw.user;
 
-        for (int i = 0; i < departments.size(); i++) {
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                for (int k = 0; k < departments.get(i).getUsers().get(j).getWorkdays().size(); k++) {
-                    if (departments.get(i).getUsers().get(j).getWorkdays().get(k).getId().equals(id)) {
-                        departments.get(i).getUsers().get(j).getWorkdays().remove(k);
+        for (int i = 0; i < workdays.size(); i++) {
+            if (workdays.get(i).getId().equals(id)) {
+                workdays.remove(i);
+            }
+        }
+
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(userId)) {
+                for (int j = 0; j < users.get(i).getWorkdays().size(); j++) {
+                    if (users.get(i).getWorkdays().get(j).getId().equals(id)) {
+                        users.get(i).getWorkdays().remove(j);
                     }
                 }
             }

@@ -1,5 +1,7 @@
 package nl.bonfire17.hourregister.models;
 
+import nl.bonfire17.hourregister.data.DataProviderSingleton;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class User {
         if(currentWorkday == null) {
             workdays.add(new Workday(LocalDateTime.now()));
             currentWorkday = workdays.get(workdays.size() - 1);
+            DataProviderSingleton.getInstance().addWorkday(workdays.get(workdays.size() - 1));
             return true;
         }
         return false;

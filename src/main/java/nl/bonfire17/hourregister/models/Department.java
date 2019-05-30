@@ -45,6 +45,14 @@ public class Department {
         return null;
     }
 
+    public void removeUserById (String id) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(id)) {
+                users.remove(i);
+            }
+        }
+    }
+
     //Getters & Setters
 
     public String getName() {

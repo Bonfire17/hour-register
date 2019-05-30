@@ -16,6 +16,7 @@ public class AdminController {
 
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
     private ArrayList<Administrator> administrators = DataProviderSingleton.getInstance().getAdministrators();
+    private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
     
     @GetMapping
     @ResponseBody
@@ -26,13 +27,6 @@ public class AdminController {
     @GetMapping(path = "/users")
     @ResponseBody
     public ArrayList<User> getAllUsers() {
-        ArrayList<User> users = new ArrayList<User>();
-
-        for (int i = 0; i < departments.size(); i++) {
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                users.add(departments.get(i).getUsers().get(j));
-            }
-        }
         return users;
     }
 
@@ -41,12 +35,10 @@ public class AdminController {
     public ArrayList<User> getWorkingUsers() {
         ArrayList<User> workingUsers = new ArrayList<User>();
 
-        for (int i = 0; i < departments.size(); i++) {
-            for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                if (departments.get(i).getUsers().get(j).getWorkdays().size() > 0) {
-                    if (departments.get(i).getUsers().get(j).getWorkdays().get(departments.get(i).getUsers().get(j).getWorkdays().size() - 1).isWorking()) {
-                        workingUsers.add(departments.get(i).getUsers().get(j));
-                    }
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getWorkdays().size() > 0) {
+                if (users.get(i).getWorkdays().get(users.get(i).getWorkdays().size() - 1).isWorking()) {
+                    workingUsers.add(users.get(i));
                 }
             }
         }
@@ -61,6 +53,7 @@ public class AdminController {
         for (int i = 0; i < departments.size(); i++) {
             if (departments.get(i).getId().equals(departmentId)) {
                 departments.get(i).addUser(adw.administrator);
+                users.add(adw.administrator);
             }
         }
     }

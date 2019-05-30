@@ -65,6 +65,18 @@ public class DataProviderSingleton {
         return this.administrators;
     }
 
+    public ArrayList<User> getUserList () {
+        return users;
+    }
+
+    public ArrayList<Workday> getWorkdays () {
+        return workdays;
+    }
+
+    public void addWorkday(Workday workday) {
+        workdays.add(workday);
+    }
+
     public void deleteDepartment(int index){
         this.departments.remove(index);
     }
