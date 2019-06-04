@@ -36,10 +36,8 @@ public class AdminController {
         ArrayList<User> workingUsers = new ArrayList<User>();
 
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getWorkdays().size() > 0) {
-                if (users.get(i).getWorkdays().get(users.get(i).getWorkdays().size() - 1).isWorking()) {
-                    workingUsers.add(users.get(i));
-                }
+            if (users.get(i).getWorkdays().size() > 0 && users.get(i).getWorkdays().get(users.get(i).getWorkdays().size() - 1).isWorking()) {
+                workingUsers.add(users.get(i));
             }
         }
         return workingUsers;

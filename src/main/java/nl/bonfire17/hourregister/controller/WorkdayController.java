@@ -43,10 +43,8 @@ public class WorkdayController {
         }
 
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(userId)) {
-                if (!users.get(i).clockIn(userId)) {
-                    users.get(i).clockOut(breakTime);
-                }
+            if (users.get(i).getId().equals(userId) && !users.get(i).clockIn(userId)) {
+                users.get(i).clockOut(breakTime);
             }
         }
     }
