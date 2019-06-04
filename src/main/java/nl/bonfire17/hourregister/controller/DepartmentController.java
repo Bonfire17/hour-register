@@ -16,12 +16,18 @@ public class DepartmentController {
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
 
+    @GetMapping
+    public String firstPage(){
+        return "department";
+    }
 
+    /*
     @GetMapping
     @ResponseBody
     public ArrayList<Department> getDepartments() {
         return departments;
     }
+    */
 
     @PostMapping
     @ResponseBody
@@ -82,6 +88,5 @@ public class DepartmentController {
             }
         }
     }
-
 }
 
