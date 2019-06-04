@@ -74,31 +74,11 @@ public class UserController {
 
     @DeleteMapping
     @ResponseBody
-    public void deleteUser(@RequestBody UserDepartmentWrapper udw) {
-        String id = udw.user.getId();
-        String departmentId = udw.department;
-
+    public void deleteUser(@RequestBody User user) {
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(id)) {
+            if (users.get(i).getId().equals(user.id)) {
                 users.remove(i);
             }
         }
-
-        for (int i = 0; i < departments.size(); i++) {
-            if (departments.get(i).getId().equals(departmentId)) {
-                for (int j = 0; j < departments.get(i).getUsers().size(); j++) {
-                    if (departments.get(i).getUsers().get(j).getId().equals(id)) {
-                        departments.get(i).getUsers().remove(j);
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < administrators.size(); i++) {
-            if (administrators.get(i).getId().equals(id)) {
-                administrators.remove(i);
-            }
-        }
     }
-
-
 }
