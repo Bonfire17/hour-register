@@ -80,5 +80,11 @@ public class UserController {
                 users.remove(i);
             }
         }
+
+        for (int i = 0; i < administrators.size(); i++) {
+            if (administrators.get(i).id.equals(user.id)) {
+                administrators.remove(i);
+            }
+        }
     }
 }
