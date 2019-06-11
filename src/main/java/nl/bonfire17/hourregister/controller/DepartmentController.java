@@ -5,6 +5,7 @@ import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.wrappers.TransferWrapper;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -17,8 +18,9 @@ public class DepartmentController {
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
 
     @GetMapping
-    public String firstPage(){
-        return "department";
+    public String firstPage(Model model){
+        model.addAttribute("greeting", "HelloWorld..!");
+        return "admin";
     }
 
     /*

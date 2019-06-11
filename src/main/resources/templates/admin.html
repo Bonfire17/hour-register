@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Open+Sans|Raleway&display=swap" rel="stylesheet">
+    <title>Admin Paneel</title>
+</head>
+<body>
+    <div class="header-div">
+        <h1 class="header-head">Admin Paneel</h1>
+    </div>
+    <div class="content flex-container">
+        <div class="item flex-item">
+            <div class="item-content-wrapper">
+                <h2 class="content-head">Ongevalideerde Uren</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Voornaam</th>
+                            <th>Achternaam</th>
+                            <th>Datum</th>
+                            <th>Start dienst</th>
+                            <th>Einde dienst</th>
+                            <th>Pauze</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Jan</td>
+                            <td>Jansen</td>
+                            <td>27-06-2019</td>
+                            <td>15:30</td>
+                            <td>23:30</td>
+                            <td>00:30</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Pieter</td>
+                            <td>Volk</td>
+                            <td>27-06-2019</td>
+                            <td>17:30</td>
+                            <td>23:45</td>
+                            <td>00:45</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
