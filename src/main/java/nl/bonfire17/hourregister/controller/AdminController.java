@@ -6,7 +6,6 @@ import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.models.Workday;
 import nl.bonfire17.hourregister.wrappers.AdminDepartmentWrapper;
-import nl.bonfire17.hourregister.wrappers.WorkdayUserWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,22 +22,20 @@ public class AdminController {
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
     private ArrayList<Workday> workdays = DataProviderSingleton.getInstance().getWorkdays();
 
+    /*
+        Workday GetMapping
+     */
+
+    //Load default admin page
     @GetMapping
     public String defaultPage(Model model){
         defaultWorkdayPage(model);
-        return "admin";
+        return "admin/workdayOverview";
     }
 
+    //Load all workdays per user
     @GetMapping(path = "/workday")
     public String defaultWorkdayPage(Model model){
-        loadWorkdays(model);
-        return "admin";
-    }
-
-    @GetMapping(path = "/workday/validated")
-    public String loadWorkdays(Model model){
-        //Get all unvalidated workdays
-
         ArrayList<HashMap<String, String>> sendData = new ArrayList<>();
         for(User user: users){
             ArrayList<Workday> workdays = user.getWorkdays();
@@ -46,11 +43,14 @@ public class AdminController {
                 sendData.add(loadWorkdayHashmap(user, workday));
             }
         }
-
+        System.out.println(workdays.toString());
+        System.out.println(users.get(1).getWorkdays().toString());
         model.addAttribute("workdays", sendData);
-        return "admin";
+        model.addAttribute("header", "Werkdagen");
+        return "admin/workdayOverview";
     }
 
+    //Load all workdays that are not validated
     @GetMapping(path = "/workday/unvalidated")
     public String loadUnvalidatedWorkdays(Model model){
         //Get all unvalidated workdays
@@ -66,8 +66,33 @@ public class AdminController {
         }
 
         model.addAttribute("workdays", sendData);
-        return "admin";
+        model.addAttribute("header", "Ongevalideerde Werkdagen");
+        return "admin/workdayOverview";
     }
+
+    @GetMapping(path = "/workday/{workdayId}")
+    public String loadWorkday(Model model, @PathVariable("workdayId") String id){
+        Workday workday = null;
+        for(Workday workdayTemp: workdays){
+            if(workdayTemp.id.equals(id)){
+                workday = workdayTemp;
+            }
+        }
+        model.addAttribute("startdate", workday.getStartDateUnix());
+        model.addAttribute("starttime", workday.getStartTimeUnix());
+        model.addAttribute("enddate", workday.getEndDateUnix());
+        model.addAttribute("endtime", workday.getEndTimeUnix());
+        model.addAttribute("breaktime", workday.getBreakTimeUnix());
+        model.addAttribute("validated", workday.getValidated());
+        model.addAttribute("id", workday.id);
+        return "admin/workday";
+    }
+
+
+
+    /*
+        User GetMapping
+     */
 
     @GetMapping(path = "/users")
     @ResponseBody
@@ -103,6 +128,7 @@ public class AdminController {
 
     private HashMap<String, String> loadWorkdayHashmap(User user, Workday workday){
         HashMap<String, String> map = new HashMap<>();
+        map.put("id", workday.id);
         map.put("firstname", user.getFirstname());
         map.put("lastname", user.getLastname());
         map.put("date", workday.getDateFormated());

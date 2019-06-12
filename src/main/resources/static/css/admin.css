@@ -5,6 +5,7 @@ body{
     background-color: #EBDCDD;
     padding: 0px;
     margin: 0px;
+    font-family: Arial, Helvetica, sans-serif
 }
 
 .flex-container{
@@ -137,6 +138,54 @@ Content css
 .data-table th, td{
     padding:3px;
 }
+
+.form-row{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+}
+
+.form-set{
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 0;
+}
+
+.form-set-single{
+    flex: 0.5 1 0;
+    width: 50%;
+    align-items: flex-start;
+}
+
+.form-item{
+    flex: 1 1 0;
+    padding-left: 10px;
+    font-size: 105%;
+}
+
+input.form-item{
+    width: 100%;
+    padding: 8px 16px;
+    margin: 0px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.button{
+    background-color: #E7717D;
+    color: #FFFFFF;
+    border: 0px;
+    margin:5px;
+    padding:5px;
+    font-size: 106%;
+}
+
+.button:hover{
+    background-color: #C6878D;
+}
+
 
 @media(max-width: 1000px){
     .content{

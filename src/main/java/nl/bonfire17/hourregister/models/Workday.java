@@ -92,6 +92,26 @@ public class Workday {
     //End Getters & Setters
     //Processing Data
 
+    public String getStartDateUnix(){
+        return startTime.toLocalDate().toString();
+    }
+
+    public String getStartTimeUnix(){
+        return startTime.toLocalTime().toString();
+    }
+
+    public String getEndDateUnix(){
+        return endTime.toLocalDate().toString();
+    }
+
+    public String getEndTimeUnix(){
+        return endTime.toLocalTime().toString();
+    }
+
+    public String getBreakTimeUnix(){
+        return breakTime.toString();
+    }
+
     public String getDateFormated(){
         return startTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
@@ -109,5 +129,10 @@ public class Workday {
     }
 
     //End Processing Data
+
+    public String toString(){
+        return getStartTimeFormated() + " " + getEndTimeFormated() + " " + getBreakTimeFormated() + " " + getDateFormated();
+    }
+
 
 }

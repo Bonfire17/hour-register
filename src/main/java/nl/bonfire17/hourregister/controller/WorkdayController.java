@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.xml.crypto.Data;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/workday")
@@ -72,24 +73,21 @@ public class WorkdayController {
 
     @DeleteMapping
     @ResponseBody
-    public void deleteWorkday(@RequestBody WorkdayUserWrapper wuw) {
-        String id = wuw.workdayId;
-        String userId = wuw.user;
-
+    public String deleteWorkday(@RequestParam("id") String id) {
+        System.out.println(id);
         for (int i = 0; i < workdays.size(); i++) {
             if (workdays.get(i).getId().equals(id)) {
                 workdays.remove(i);
             }
         }
-
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(userId)) {
-                for (int j = 0; j < users.get(i).getWorkdays().size(); j++) {
-                    if (users.get(i).getWorkdays().get(j).getId().equals(id)) {
-                        users.get(i).getWorkdays().remove(j);
-                    }
+            for (int j = 0; j < users.get(i).getWorkdays().size(); j++) {
+                if (users.get(i).getWorkdays().get(j).getId().equals(id)) {
+                    users.get(i).getWorkdays().remove(j);
                 }
             }
         }
+        return id;
+
     }
 }
