@@ -4,11 +4,15 @@ import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
+import nl.bonfire17.hourregister.models.Workday;
 import nl.bonfire17.hourregister.wrappers.AdminDepartmentWrapper;
+import nl.bonfire17.hourregister.wrappers.WorkdayUserWrapper;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/administrator")
@@ -17,13 +21,54 @@ public class AdminController {
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
     private ArrayList<Administrator> administrators = DataProviderSingleton.getInstance().getAdministrators();
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
-    
+    private ArrayList<Workday> workdays = DataProviderSingleton.getInstance().getWorkdays();
+
     @GetMapping
-    @ResponseBody
-    public ArrayList<Administrator> getAdministrators() {
-        return administrators;
+    public String defaultPage(Model model){
+        defaultWorkdayPage(model);
+        return "admin";
     }
-    
+
+    @GetMapping(path = "/workday")
+    public String defaultWorkdayPage(Model model){
+        loadWorkdays(model);
+        return "admin";
+    }
+
+    @GetMapping(path = "/workday/validated")
+    public String loadWorkdays(Model model){
+        //Get all unvalidated workdays
+
+        ArrayList<HashMap<String, String>> sendData = new ArrayList<>();
+        for(User user: users){
+            ArrayList<Workday> workdays = user.getWorkdays();
+            for(Workday workday: workdays){
+                sendData.add(loadWorkdayHashmap(user, workday));
+            }
+        }
+
+        model.addAttribute("workdays", sendData);
+        return "admin";
+    }
+
+    @GetMapping(path = "/workday/unvalidated")
+    public String loadUnvalidatedWorkdays(Model model){
+        //Get all unvalidated workdays
+
+        ArrayList<HashMap<String, String>> sendData = new ArrayList<>();
+        for(User user: users){
+            ArrayList<Workday> workdays = user.getWorkdays();
+            for(Workday workday: workdays){
+                if(!workday.getValidated()) {
+                    sendData.add(loadWorkdayHashmap(user, workday));
+                }
+            }
+        }
+
+        model.addAttribute("workdays", sendData);
+        return "admin";
+    }
+
     @GetMapping(path = "/users")
     @ResponseBody
     public ArrayList<User> getAllUsers() {
@@ -54,5 +99,17 @@ public class AdminController {
                 users.add(adw.administrator);
             }
         }
+    }
+
+    private HashMap<String, String> loadWorkdayHashmap(User user, Workday workday){
+        HashMap<String, String> map = new HashMap<>();
+        map.put("firstname", user.getFirstname());
+        map.put("lastname", user.getLastname());
+        map.put("date", workday.getDateFormated());
+        map.put("starttime", workday.getStartTimeFormated());
+        map.put("endtime", workday.getEndTimeFormated());
+        map.put("breaktime", workday.getBreakTimeFormated());
+        map.put("validated", workday.getValidated() ? "Ja": "Nee");
+        return map;
     }
 }

@@ -44,8 +44,16 @@ public class DataProviderSingleton {
         departments.get(0).addUser(administrators.get(0));
 
         LocalDateTime date = LocalDateTime.of(2019, 05, 28, 12, 0, 0);
-        workdays.add(new Workday(date, date.plusHours(3), LocalTime.of(0, 15)));
+        workdays.add(new Workday(date, date.plusHours(3), LocalTime.of(0, 15), true));
         departments.get(0).getUser(0).addWorkday(workdays.get(0));
+
+        date = LocalDateTime.of(2019, 06, 28, 8, 0, 0);
+        workdays.add(new Workday(date, date.plusHours(8), LocalTime.of(0, 45), true));
+        departments.get(0).getUser(1).addWorkday(workdays.get(1));
+
+        date = LocalDateTime.of(2019, 06, 29, 8, 0, 0);
+        workdays.add(new Workday(date, date.plusHours(8), LocalTime.of(1, 0), false));
+        departments.get(0).getUser(1).addWorkday(workdays.get(2));
     }
 
     private synchronized static void createInstance(){

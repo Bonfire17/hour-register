@@ -43,6 +43,61 @@ Header css
     font-family: 'Open Sans', sans-serif;
 }
 /*
+Navigation css
+ */
+.nav-list{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    list-style: none;
+    margin:0px;
+    padding:0px;
+    width: 100%;
+}
+
+.nav-item{
+    flex-grow: 1;
+    text-align: center;
+    background-color: #E7717D;
+    color: #FFFFFF;
+    margin: 5px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+.nav-item:hover{
+    background-color: #C6878D;
+}
+
+.nav-item li{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 130%;
+    text-decoration: none;
+}
+
+.nav-item:link{
+    color: #FFFFFF;
+}
+
+.nav-item:visited{
+    color: #FFFFFF;
+}
+
+.nav-item:hover{
+    color: #F1F1F1;
+}
+
+.nav-sub-item{
+    height: 40px;
+}
+
+.nav-sub-item li{
+    font-size: 105%;
+}
+/*
 Content css
  */
 .content{
@@ -63,6 +118,10 @@ Content css
     margin-left: 15px;
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+.table-wrapper{
+    overflow-x: auto;
 }
 
 .data-table{

@@ -18,18 +18,10 @@ public class DepartmentController {
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
 
     @GetMapping
-    public String firstPage(Model model){
-        model.addAttribute("greeting", "HelloWorld..!");
-        return "admin";
-    }
-
-    /*
-    @GetMapping
     @ResponseBody
     public ArrayList<Department> getDepartments() {
         return departments;
     }
-    */
 
     @PostMapping
     @ResponseBody
