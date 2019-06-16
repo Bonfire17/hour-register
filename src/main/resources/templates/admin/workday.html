@@ -10,7 +10,7 @@
     <div class="item flex-item">
         <div class="item-content-wrapper">
             <h2 class="content-head">Werkdag Aanpassen</h2>
-            <form class="form" method="put" th:action="@{/workday}">
+            <form class="form" method="post" th:action="@{/workday/edit/{workdayId}(workdayId=${id})}">
                 <div class="form-row">
                     <div class="form-set">
                         <label class="form-item" for="start-date">Start Datum</label>
@@ -44,13 +44,12 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <input class="button" type="submit">
+                    <input class="button" type="submit" value="Opslaan">
                 </div>
 
             </form>
-            <form class="form" method="delete" th:action="@{/workday}">
-                <input class="button" type="submit">
-                <input type="hidden" id="id" name="id" th:value="${id}">
+            <form class="form" method="post" th:action="@{/workday/delete/{workdayId}(workdayId=${id})}">
+                <input class="button" type="submit" value="Verwijderen">
             </form>
         </div>
     </div>
