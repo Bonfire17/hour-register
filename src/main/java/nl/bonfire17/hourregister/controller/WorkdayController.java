@@ -21,7 +21,7 @@ import java.util.HashMap;
 @RequestMapping("/workday")
 public class WorkdayController {
 
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
+    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
     private ArrayList<Workday> workdays = DataProviderSingleton.getInstance().getWorkdays();
 
     @GetMapping
@@ -41,9 +41,9 @@ public class WorkdayController {
     @PostMapping(path = "/edit/{workdayId}")
     public RedirectView editWorkday(@RequestParam(name = "start-date") String startdate,
                                    @RequestParam(name = "start-time") String starttime,
-                                   @RequestParam(name = "end-date") String enddate,
-                                   @RequestParam(name = "end-time") String endtime,
-                                   @RequestParam(name = "break-time") String breaktime,
+                                   @RequestParam(name = "end-date", required = false) String enddate,
+                                   @RequestParam(name = "end-time", required = false) String endtime,
+                                   @RequestParam(name = "break-time", required = false) String breaktime,
                                    @RequestParam(name = "validated", required = false) String validated,
                                    @PathVariable("workdayId") String id) {
 
@@ -54,12 +54,16 @@ public class WorkdayController {
             if (workdays.get(i).getId().equals(id)) {
                 Workday workday = workdays.get(i);
                 workday.setStartTime(LocalDateTime.parse(startdate + " " + starttime, dateTimeFormatter));
-                workday.setEndTime(LocalDateTime.parse(enddate + " " + endtime, dateTimeFormatter));
-                workday.setBreakTime(LocalTime.parse(breaktime, timeFormatter));
-                if(validated != null) {
-                    workday.setValidated(true);
-                }else{
-                    workday.setValidated(false);
+
+                //The administrator should only change the endtime/enddate/validate when the user has clocked out.
+                if(!workday.isWorking()) {
+                    workday.setEndTime(LocalDateTime.parse(enddate + " " + endtime, dateTimeFormatter));
+                    workday.setBreakTime(LocalTime.parse(breaktime, timeFormatter));
+                    if (validated != null) {
+                        workday.setValidated(true);
+                    } else {
+                        workday.setValidated(false);
+                    }
                 }
             }
         }

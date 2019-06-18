@@ -15,8 +15,7 @@ import java.util.ArrayList;
 public class UserController {
 
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
-    private ArrayList<Administrator> administrators = DataProviderSingleton.getInstance().getAdministrators();
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
+    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
 
     @GetMapping
     @ResponseBody
@@ -72,6 +71,7 @@ public class UserController {
         }
     }
 
+    /*
     @DeleteMapping
     @ResponseBody
     public void deleteUser(@RequestBody User user) {
@@ -87,4 +87,6 @@ public class UserController {
             }
         }
     }
+    */
+
 }

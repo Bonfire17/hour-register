@@ -10,6 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,8 +22,7 @@ import java.util.HashMap;
 public class AdminController {
 
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
-    private ArrayList<Administrator> administrators = DataProviderSingleton.getInstance().getAdministrators();
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUserList();
+    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
     private ArrayList<Workday> workdays = DataProviderSingleton.getInstance().getWorkdays();
 
     /*
@@ -30,7 +33,7 @@ public class AdminController {
     @GetMapping
     public String defaultPage(Model model){
         defaultWorkdayPage(model);
-        return "admin/workdayOverview";
+        return "admin/workday-overview";
     }
 
     //Load all workdays per user
@@ -43,11 +46,9 @@ public class AdminController {
                 sendData.add(loadWorkdayHashmap(user, workday));
             }
         }
-        System.out.println(workdays.toString());
-        System.out.println(users.get(1).getWorkdays().toString());
         model.addAttribute("workdays", sendData);
         model.addAttribute("header", "Werkdagen");
-        return "admin/workdayOverview";
+        return "admin/workday-overview";
     }
 
     //Load all workdays that are not validated
@@ -67,9 +68,10 @@ public class AdminController {
 
         model.addAttribute("workdays", sendData);
         model.addAttribute("header", "Ongevalideerde Werkdagen");
-        return "admin/workdayOverview";
+        return "admin/workday-overview";
     }
 
+    //Load specific workday by id
     @GetMapping(path = "/workday/{workdayId}")
     public String loadWorkday(Model model, @PathVariable("workdayId") String id){
         Workday workday = null;
@@ -80,10 +82,13 @@ public class AdminController {
         }
         model.addAttribute("startdate", workday.getStartDateUnix());
         model.addAttribute("starttime", workday.getStartTimeUnix());
-        model.addAttribute("enddate", workday.getEndDateUnix());
-        model.addAttribute("endtime", workday.getEndTimeUnix());
-        model.addAttribute("breaktime", workday.getBreakTimeUnix());
-        model.addAttribute("validated", workday.getValidated());
+        model.addAttribute("isWorking", workday.isWorking());
+        if(!workday.isWorking()){
+            model.addAttribute("enddate", workday.getEndDateUnix());
+            model.addAttribute("endtime", workday.getEndTimeUnix());
+            model.addAttribute("breaktime", workday.getBreakTimeUnix());
+            model.addAttribute("validated", workday.getValidated());
+        }
         model.addAttribute("id", workday.id);
         return "admin/workday";
     }
@@ -94,10 +99,18 @@ public class AdminController {
         User GetMapping
      */
 
-    @GetMapping(path = "/users")
-    @ResponseBody
-    public ArrayList<User> getAllUsers() {
-        return users;
+    @GetMapping(path = "/user")
+    public String defaultUserPage(Model model){
+        ArrayList<HashMap<String, String>> sendData = new ArrayList<>();
+        for(Department department: departments){
+            ArrayList<User> users = department.getUsers();
+            for(User user: users){
+                sendData.add(loadUserHashmap(department, user));
+            }
+        }
+        model.addAttribute("users", sendData);
+        model.addAttribute("header", "Gerbuikers");
+        return "admin/user-overview";
     }
 
     @GetMapping(path = "/working")
@@ -113,6 +126,7 @@ public class AdminController {
         return workingUsers;
     }
 
+    /*
     @PostMapping
     @ResponseBody
     public void addAdmin(@RequestBody AdminDepartmentWrapper adw) {
@@ -125,17 +139,40 @@ public class AdminController {
             }
         }
     }
+    */
+
 
     private HashMap<String, String> loadWorkdayHashmap(User user, Workday workday){
         HashMap<String, String> map = new HashMap<>();
+        boolean isWorking = workday.isWorking();
         map.put("id", workday.id);
         map.put("firstname", user.getFirstname());
         map.put("lastname", user.getLastname());
         map.put("date", workday.getDateFormated());
         map.put("starttime", workday.getStartTimeFormated());
-        map.put("endtime", workday.getEndTimeFormated());
-        map.put("breaktime", workday.getBreakTimeFormated());
-        map.put("validated", workday.getValidated() ? "Ja": "Nee");
+        map.put("endtime", isWorking ? "-" : workday.getEndTimeFormated());
+        map.put("breaktime", isWorking ? "-" : workday.getBreakTimeFormated());
+        map.put("validated", workday.getValidated() ? "Ja" : "Nee");
+        return map;
+    }
+
+    private HashMap<String, String> loadUserHashmap(Department department, User user){
+        HashMap<String, String> map = new HashMap<>();
+        //Get last workday
+        LocalDateTime high = null;
+        for(int i = 0; i < user.getWorkdays().size(); i++){
+            if(high == null || user.getWorkdays().get(i).getStartTime().isAfter(high)){
+                high = user.getWorkdays().get(i).getStartTime();
+            }
+        }
+        map.put("id", user.id);
+        map.put("firstname", user.getFirstname());
+        map.put("lastname", user.getLastname());
+        map.put("dateOfBirth", user.getDateOfBirthFormated());
+        map.put("department", department.getName());
+        map.put("lastWorkday", high == null ? "-" : high.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        map.put("isWorking", user.isWorking() ? "Ja" : "Nee");
+        map.put("isAdmin", user.isAdmin() ? "Ja" : "Nee");
         return map;
     }
 }
