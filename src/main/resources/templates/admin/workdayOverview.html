@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="fragments/head :: head"></div>
+<body>
+    <div th:replace="fragments/header :: header"></div>
+    <div class="content flex-container">
+        <div class="item flex-item">
+            <div th:replace="fragments/navigation :: navigation"></div>
+        </div>
+        <div class="item flex-item">
+            <nav class="nav nav-sub">
+                <ul class="nav-list nav-sub-list">
+                    <a class="nav-item nav-sub-item" th:href="@{/administrator/workday}"><li>Normale Werkdagen</li></a>
+                    <a class="nav-item nav-sub-item" th:href="@{/administrator/workday/unvalidated}"><li>Ongevalideerde Werkdagen</li></a>
+                </ul>
+            </nav>
+        </div>
+        <div class="item flex-item">
+            <div class="item-content-wrapper">
+                <h2 class="content-head" th:text="${header}">Werkdagen</h2>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Voornaam</th>
+                                <th>Achternaam</th>
+                                <th>Datum</th>
+                                <th>Start dienst</th>
+                                <th>Einde dienst</th>
+                                <th>Pauze</th>
+                                <th>Gevalideerd</th>
+                                <th>Aanpassen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="workday, iterStat : ${workdays}">
+                                <td th:text="${iterStat.index}">1</td>
+                                <td th:text="${workday.firstname}">Jan</td>
+                                <td th:text="${workday.lastname}">Jansen</td>
+                                <td th:text="${workday.date}">27-06-2019</td>
+                                <td th:text="${workday.starttime}">15:30</td>
+                                <td th:text="${workday.endtime}">23:30</td>
+                                <td th:text="${workday.breaktime}">00:30</td>
+                                <td th:text="${workday.validated}">Ja</td>
+                                <td><a th:href="@{/administrator/workday/{workdayId}(workdayId=${workday.id})}">Aanpassen</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

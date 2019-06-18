@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<body>
+<nav th:fragment="navigation" class="nav">
+    <ul class="nav-list">
+        <a class="nav-item" th:href="@{/administrator/department}"><li >Afdelingen</li></a>
+        <a class="nav-item" th:href="@{/administrator/user}"><li>Gebruikers</li></a>
+        <a class="nav-item" th:href="@{/administrator/workday}"><li>Werkdagen</li></a>
+    </ul>
+</nav>
+</body>
+</html>
