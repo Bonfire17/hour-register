@@ -7,10 +7,15 @@ import nl.bonfire17.hourregister.models.Workday;
 import nl.bonfire17.hourregister.wrappers.WorkdayUserWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.xml.crypto.Data;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/workday")
@@ -32,64 +37,50 @@ public class WorkdayController {
         return workdays;
     }
 
-    @PostMapping
-    @ResponseBody
-    public void addWorkday(@RequestBody WorkdayUserWrapper wuw) {
-        String userId = wuw.user;
-        LocalTime breakTime = LocalTime.of(0,0,0);
+    //This post is used to edit a existing workday
+    @PostMapping(path = "/edit/{workdayId}")
+    public RedirectView editWorkday(@RequestParam(name = "start-date") String startdate,
+                                   @RequestParam(name = "start-time") String starttime,
+                                   @RequestParam(name = "end-date") String enddate,
+                                   @RequestParam(name = "end-time") String endtime,
+                                   @RequestParam(name = "break-time") String breaktime,
+                                   @RequestParam(name = "validated", required = false) String validated,
+                                   @PathVariable("workdayId") String id) {
 
-        if (wuw.workday != null) {
-            breakTime = wuw.workday;
-        }
-
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(userId) && !users.get(i).clockIn(userId)) {
-                users.get(i).clockOut(breakTime);
-            }
-        }
-    }
-
-    @PutMapping
-    @ResponseBody
-    public void editWorkday(@RequestBody Workday workday) {
-        String id = workday.getId();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         for (int i = 0; i < workdays.size(); i++) {
             if (workdays.get(i).getId().equals(id)) {
-                if (!workday.getStartTime().equals(null)) {
-                    workdays.get(i).setStartTime(workday.getStartTime());
+                Workday workday = workdays.get(i);
+                workday.setStartTime(LocalDateTime.parse(startdate + " " + starttime, dateTimeFormatter));
+                workday.setEndTime(LocalDateTime.parse(enddate + " " + endtime, dateTimeFormatter));
+                workday.setBreakTime(LocalTime.parse(breaktime, timeFormatter));
+                if(validated != null) {
+                    workday.setValidated(true);
+                }else{
+                    workday.setValidated(false);
                 }
-                if (!workday.getEndTime().equals(null)) {
-                    workdays.get(i).setEndTime(workday.getEndTime());
-                }
-                if (!workday.getBreakTime().equals(null)) {
-                    workdays.get(i).setBreakTime(workday.getBreakTime());
-                }
-
             }
         }
+        return new RedirectView("/administrator/workday");
     }
 
-    @DeleteMapping
-    @ResponseBody
-    public void deleteWorkday(@RequestBody WorkdayUserWrapper wuw) {
-        String id = wuw.workdayId;
-        String userId = wuw.user;
-
+    @PostMapping(path = "/delete/{workdayId}")
+    public RedirectView deleteWorkday(@PathVariable("workdayId") String id) {
+        System.out.println(id);
         for (int i = 0; i < workdays.size(); i++) {
             if (workdays.get(i).getId().equals(id)) {
                 workdays.remove(i);
             }
         }
-
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(userId)) {
-                for (int j = 0; j < users.get(i).getWorkdays().size(); j++) {
-                    if (users.get(i).getWorkdays().get(j).getId().equals(id)) {
-                        users.get(i).getWorkdays().remove(j);
-                    }
+            for (int j = 0; j < users.get(i).getWorkdays().size(); j++) {
+                if (users.get(i).getWorkdays().get(j).getId().equals(id)) {
+                    users.get(i).getWorkdays().remove(j);
                 }
             }
         }
+        return new RedirectView("/administrator/workday");
     }
 }
