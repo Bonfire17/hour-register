@@ -55,6 +55,15 @@ public class DataProviderSingleton {
         return this.departments;
     }
 
+    public Department getDepartmentById(String id){
+        for(Department department: departments){
+            if(department.id.equals(id)){
+                return department;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<User> getUsers(){
         ArrayList<User> users = new ArrayList<>();
         for(Department department: departments){
