@@ -5,17 +5,18 @@ import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.models.Workday;
-import nl.bonfire17.hourregister.wrappers.AdminDepartmentWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+/*
+    Only the admin should jave access to the controller. All admin panel getters are here!
+ */
 
 @Controller
 @RequestMapping("/administrator")
@@ -163,6 +164,34 @@ public class AdminController {
         return "admin/user-overview";
     }
 
+    //Load user by id
+    @GetMapping(path = "/user/{id}")
+    public String loadUser(Model model, @PathVariable("id") String id){
+        User user = DataProviderSingleton.getInstance().getUserById(id);
+        model.addAttribute("add", false);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("email", user.getEmail());
+        model.addAttribute("firstname", user.getFirstname());
+        model.addAttribute("lastname", user.getLastname());
+        model.addAttribute("dateOfBirth", user.getDateOfBirthUnix());
+        model.addAttribute("administrator",  user instanceof Administrator);
+        model.addAttribute("action", "/user/edit/" + user.id);
+        model.addAttribute("departments", getDepartmentData());
+        model.addAttribute("header", "Gebruiker Aanpassen");
+        return "admin/user";
+    }
+
+    //Get add user form
+    @GetMapping(path = "/user/add")
+    public String loadAddUserForm(Model model){
+        ArrayList<HashMap<String, String>> departmentData = getDepartmentData();
+        model.addAttribute("add", true);
+        model.addAttribute("action", "/user/add");
+        model.addAttribute("departments", getDepartmentData());
+        model.addAttribute("header", "Gebruiker Toevoegen");
+        return "/admin/user";
+    }
+
 
     /*
         User methods
@@ -196,6 +225,18 @@ public class AdminController {
         ArrayList<Department> departments = new ArrayList<>();
         departments.add(department);
         return getUserHashMapArray(departments, AdminController.ALLUSERS);
+    }
+
+    //Get department data
+    private ArrayList<HashMap<String, String>> getDepartmentData(){
+        ArrayList<HashMap<String, String>> departmentData = new ArrayList<>();
+        for(Department department: departments){
+            HashMap<String, String> map = new HashMap<>();
+            map.put("id", department.id);
+            map.put("name", department.getName());
+            departmentData.add(map);
+        }
+        return departmentData;
     }
 
     //Load user data into a HashMap

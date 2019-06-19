@@ -7,8 +7,15 @@ import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.wrappers.UserDepartmentWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+
+/*
+    Both the admin and a user should be able to access this controller. Some methods however should not be accessible by the user
+ */
 
 @Controller
 @RequestMapping("/user")
@@ -17,76 +24,100 @@ public class UserController {
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
 
-    @GetMapping
-    @ResponseBody
-    public ArrayList<User> getUsers(@RequestBody Department department) {
-        String departmentId = department.getId();
-        ArrayList<User> users = new ArrayList<>();
-        for (int i = 0; i < departments.size(); i++) {
-            if (departments.get(i).getId().equals(departmentId)) {
-                return departments.get(i).getUsers();
-            }
+    //Admin
+    //Add a new user
+    @PostMapping(path = "/add")
+    public RedirectView addUser(@RequestParam(name = "username") String username,
+                        @RequestParam(name = "email") String email,
+                        @RequestParam(name = "firstname") String firstname,
+                        @RequestParam(name = "lastname") String lastname,
+                        @RequestParam(name = "date-of-birth") String dateOfBirth,
+                        @RequestParam(name = "administrator", required = false) String administrator,
+                        @RequestParam(name = "password") String password,
+                        @RequestParam(name = "department") String departmentId) {
+        if(administrator != null) {
+            DataProviderSingleton.getInstance().getDepartmentById(departmentId).addUser(new Administrator(username, email, firstname, lastname, password, LocalDate.parse(dateOfBirth)));
+        }else{
+            DataProviderSingleton.getInstance().getDepartmentById(departmentId).addUser(new User(username, email, firstname, lastname, password, LocalDate.parse(dateOfBirth)));
         }
-        return users;
+        return new RedirectView("/administrator/user");
     }
 
-    @PostMapping
-    @ResponseBody
-    public void addUser(@RequestBody UserDepartmentWrapper udw) {
-        String departmentId = udw.department;
-        for (int i = 0; i < departments.size(); i++) {
-            if (departments.get(i).getId().equals(departmentId)) {
-                departments.get(i).getUsers().add(udw.user);
-            }
+    //Admin
+    //Edit a existing user
+    @PostMapping(path = "/edit/{id}")
+    public RedirectView editUser(@PathVariable(name = "id") String id,
+                                 @RequestParam(name = "username") String username,
+                                 @RequestParam(name = "email") String email,
+                                 @RequestParam(name = "firstname") String firstname,
+                                 @RequestParam(name = "lastname") String lastname,
+                                 @RequestParam(name = "date-of-birth") String dateOfBirth,
+                                 @RequestParam(name = "administrator", required = false) String administrator,
+                                 @RequestParam(name = "old-password", required = false) String oldPassword,
+                                 @RequestParam(name = "new-password", required = false) String newPassword) {
+
+        User user = DataProviderSingleton.getInstance().getUserById(id);
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+        user.setDateOfBirth(LocalDate.parse(dateOfBirth));
+
+        //Check if the administrator box is checked AND if the user is not already a administrator
+        if(administrator != null && !(user instanceof Administrator)){
+            DataProviderSingleton.getInstance().replaceUser(user.getAdministrator());
+        }else if(administrator == null && user instanceof Administrator){
+            DataProviderSingleton.getInstance().replaceUser(((Administrator) user).getUser());
         }
-        users.add(udw.user);
+        System.out.println(user.isAdmin());
+        if(oldPassword == user.getPassword()){
+            user.setPassword(newPassword);
+        }
+        return new RedirectView("/administrator/user");
     }
 
-    @PutMapping
-    @ResponseBody
-    public void editUser(@RequestBody User user) {
-        String id = user.getId();
+    //Admin
+    //Transfer a user from one department to another
+    @PostMapping(path = "/transfer/{id}")
+    public RedirectView transferUser(@PathVariable(name = "id") String id, @RequestParam(name = "department") String targetDepartment) {
+        Department oldDepartment, newDepartment;
+        User transferUser;
 
+        for(int i = 0; i < departments.size(); i++){
+           Department department = departments.get(i);
+           for(User user: department.getUsers()){
+               if(user.id.equals(id)){
+                    transferUser = user;
+                    oldDepartment = department;
+                    newDepartment = DataProviderSingleton.getInstance().getDepartmentById(targetDepartment);
+                    Department.transferUser(oldDepartment, newDepartment, transferUser);
+                    return new RedirectView("/administrator/user");
+               }
+           }
+        }
+        return new RedirectView("/administrator/user");
+    }
+
+    //Admin
+    //Delete a user
+    @PostMapping(path = "/delete/{id}")
+    public RedirectView transferUser(@PathVariable(name = "id") String id) {
+        for(Department department: departments) {
+            for (int i = 0; i < department.getUsers().size(); i++) {
+                if (department.getUsers().get(i).id.equals(id)) {
+                    department.getUsers().get(i).getWorkdays().clear();
+                    department.getUsers().remove(i);
+                }
+            }
+        }
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(id)) {
-                if (!user.getUsername().equals(null)) {
-                    users.get(i).setUsername(user.getUsername());
-                }
-                if (!user.getEmail().equals(null)) {
-                    users.get(i).setEmail(user.getEmail());
-                }
-                if (!user.getFirstname().equals(null)) {
-                    users.get(i).setFirstname(user.getFirstname());
-                }
-                if (!user.getLastname().equals(null)) {
-                    users.get(i).setLastname(user.getLastname());
-                }
-                if (!user.getPassword().equals(null)) {
-                    users.get(i).setPassword(user.getPassword());
-                }
-                if (!user.getDateOfBirth().equals(null)) {
-                    users.get(i).setDateOfBirth(user.getDateOfBirth());
-                }
-            }
-        }
-    }
-
-    /*
-    @DeleteMapping
-    @ResponseBody
-    public void deleteUser(@RequestBody User user) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(user.id)) {
+            if (users.get(i).id.equals(id)) {
+                users.get(i).getWorkdays().clear();
                 users.remove(i);
             }
         }
-
-        for (int i = 0; i < administrators.size(); i++) {
-            if (administrators.get(i).id.equals(user.id)) {
-                administrators.remove(i);
-            }
-        }
+        return new RedirectView("/administrator/user");
     }
-    */
+
 
 }

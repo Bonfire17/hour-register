@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+/*
+    Both the admin and a user should be able to access this controller. Some methods however should not be accessible by the user
+*/
+
 @Controller
 @RequestMapping("/workday")
 public class WorkdayController {
@@ -24,20 +28,8 @@ public class WorkdayController {
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
     private ArrayList<Workday> workdays = DataProviderSingleton.getInstance().getWorkdays();
 
-    @GetMapping
-    @ResponseBody
-    public ArrayList<Workday> getWorkdays(@RequestBody User user) {
-        String userId = user.getId();
-        ArrayList<Workday> workdays = new ArrayList<Workday>();
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(userId)) {
-                return users.get(i).getWorkdays();
-            }
-        }
-        return workdays;
-    }
-
-    //This post is used to edit a existing workday
+    //Admin
+    //Edit a existing workday
     @PostMapping(path = "/edit/{workdayId}")
     public RedirectView editWorkday(@RequestParam(name = "start-date") String startdate,
                                    @RequestParam(name = "start-time") String starttime,
@@ -70,6 +62,8 @@ public class WorkdayController {
         return new RedirectView("/administrator/workday");
     }
 
+    //Admin
+    //Delete a existing workday
     @PostMapping(path = "/delete/{workdayId}")
     public RedirectView deleteWorkday(@PathVariable("workdayId") String id) {
         System.out.println(id);
