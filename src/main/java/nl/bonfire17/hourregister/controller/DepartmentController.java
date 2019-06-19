@@ -46,31 +46,6 @@ public class DepartmentController {
         }
     }
 
-    @PutMapping(path = "/transfer")
-    @ResponseBody
-    public void transferUser(TransferWrapper tfw) {
-        String oldId = tfw.oldDepartment;
-        String newId = tfw.newDepartment;
-        String userId = tfw.userId;
-
-        //remove from old department
-        for (int i = 0; i < departments.size(); i++) {
-            if (departments.get(i).getId().equals(oldId)) {
-                departments.get(i).removeUserById(userId);
-            }
-        }
-        //Add to new department
-        for (int i = 0; i < departments.size(); i++) {
-            if (departments.get(i).getId().equals(newId)) {
-                for (int j = 0; j < users.size(); j++) {
-                    if (users.get(j).getId().equals(userId)) {
-                        departments.get(i).getUsers().add(users.get(j));
-                    }
-                }
-            }
-        }
-    }
-
     @DeleteMapping
     @ResponseBody
     public void deleteDepartment(@RequestBody  Department department) {

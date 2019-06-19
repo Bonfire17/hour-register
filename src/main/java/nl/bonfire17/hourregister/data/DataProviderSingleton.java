@@ -4,6 +4,7 @@ import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.models.Workday;
+import nl.bonfire17.hourregister.wrappers.TransferWrapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class DataProviderSingleton {
         departments = new ArrayList<Department>();
 
         departments.add(new Department("Restaurant Bediening", "Alle restaurant medewerkers"));
+        departments.add(new Department("ICT", "Alle ict medewerkers"));
 
         departments.get(0).getUsers().add(new User("Bonfire17", "bertus@gmail.com", "Bert", "Bonkers", "test123", LocalDate.of(1998, 6, 27)));
         departments.get(0).getUsers().add(new User("JJVoort", "jj@hotmail.com", "Jay", "Jay", "wachtwoord", LocalDate.of(2000, 5, 13)));
@@ -70,6 +72,27 @@ public class DataProviderSingleton {
             users.addAll(department.getUsers());
         }
         return users;
+    }
+
+    public User getUserById(String id){
+        for(User user: getUsers()){
+            if(user.id.equals(id)){
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public void replaceUser(User newUser){
+        for(Department department: departments) {
+            for (int i = 0; i < department.getUsers().size(); i++) {
+                User user = department.getUsers().get(i);
+                if (user.id.equals(newUser.id)) {
+                    department.getUsers().set(i, newUser);
+                    break;
+                }
+            }
+        }
     }
 
     public ArrayList<Workday> getWorkdays(){

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="../../static/css/admin.css">
+<div th:replace="fragments/head :: head"></div>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div class="content flex-container">
+    <div class="item flex-item">
+        <div th:replace="fragments/navigation :: navigation"></div>
+    </div>
+    <div class="item flex-item">
+        <div class="item-content-wrapper">
+            <h2 class="content-head" th:text="${header}">Gebruiker Aanpassen</h2>
+            <form class="form" method="post" th:action="@{${action}}">
+                <div class="form-row">
+                    <div class="form-set">
+                        <label class="form-item" for="username">Gebruikersnaam</label>
+                        <input class="form-item" type="text" name="username" id="username" th:value="${username}"/>
+                    </div>
+                    <div class="form-set">
+                        <label class="form-item" for="email">Email</label>
+                        <input class="form-item" type="text" name="email" id="email" th:value="${email}"/>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-set">
+                        <label class="form-item" for="firstname">Voornaam</label>
+                        <input class="form-item" type="text" name="firstname" id="firstname" th:value="${firstname}"/>
+                    </div>
+                    <div class="form-set">
+                        <label class="form-item" for="lastname">Achternaam</label>
+                        <input class="form-item" type="text" name="lastname" id="lastname" th:value="${lastname}"/>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-set form-set-single">
+                        <label class="form-item" for="date-of-birth">Geboorte Datum</label>
+                        <input class="form-item" type="date" name="date-of-birth" id="date-of-birth" th:value="${dateOfBirth}"/>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-set form-set-single">
+                        <label class="form-item" for="administrator">Administrator</label>
+                        <input class="form-item" type="checkbox" name="administrator" id="administrator" th:checked="${administrator}"/>
+                    </div>
+                </div>
+                <div class="form-row" th:if="${add}">
+                    <div class="form-set">
+                        <label class="form-item" for="password">Wachtwoord</label>
+                        <input class="form-item" type="password" name="password" id="password"/>
+                    </div>
+                    <div class="form-set">
+                        <label class="form-item" for="department">Department</label>
+                        <select class="form-item" id="department" name="department">
+                            <th:block th:each="department : ${departments}">
+                                <option th:value="${department.id}" th:text="${department.name}"></option>
+                            </th:block>
+                        </select>
+                    </div>
+                </div>
+                <th:block th:unless="${add}">
+                    <h3 class="content-head">Wachtwoord wijzigen</h3>
+                    <div class="form-row">
+                        <div class="form-set">
+                            <label class="form-item" for="old-password">Oude wachtwoord</label>
+                            <input class="form-item" type="password" name="old-password" id="old-password"/>
+                        </div>
+                        <div class="form-set">
+                            <label class="form-item" for="new-password">Nieuwe wachtwoord</label>
+                            <input class="form-item" type="password" name="new-password" id="new-password"/>
+                        </div>
+                    </div>
+                </th:block>
+                <div class="form-row">
+                    <input class="button" type="submit" value="Opslaan">
+                </div>
+            </form>
+            <form class="form" method="post" th:action="@{/user/delete/{userId}(userId=${id})}" th:if="${!add}">
+                <input class="button" type="submit" value="Verwijderen">
+            </form>
+
+        </div>
+    </div>
+    <div class="item flex-item" th:if="${!add}">
+        <div class="item-content-wrapper">
+            <h2 class="content-head">Gebruiker Transferen</h2>
+            <form class="form" method="post" th:action="@{/user/transfer/{userId}(userId=${id})}">
+                <div class="form-row">
+                    <div class="form-set">
+                        <label class="form-item" for="department">Department Transfer</label>
+                        <select class="form-item" id="department" name="department">
+                            <th:block th:each="department : ${departments}">
+                                <option th:value="${department.id}" th:text="${department.name}"></option>
+                            </th:block>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <input class="button" type="submit" value="Transfer">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

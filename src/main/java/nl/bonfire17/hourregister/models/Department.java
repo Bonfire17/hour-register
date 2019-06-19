@@ -53,6 +53,23 @@ public class Department {
         }
     }
 
+    //Static Methods
+
+    //Transfar user from one department to the other
+    public static void transferUser(Department oldDepartment, Department newDepartment, User tranferUser) {
+        //remove from old department
+        for(int i = 0; i < oldDepartment.getUsers().size(); i++){
+            User user = oldDepartment.getUsers().get(i);
+            if(user.id.equals(tranferUser.id)){
+                oldDepartment.getUsers().remove(i);
+                break;
+            }
+        }
+        //Add to new department
+        newDepartment.getUsers().add(tranferUser);
+    }
+
+    //End Static Methods
     //Getters & Setters
 
     public String getName() {

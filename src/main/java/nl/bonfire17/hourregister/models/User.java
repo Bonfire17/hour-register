@@ -34,9 +34,27 @@ public class User {
         workdays = new ArrayList<Workday>();
     }
 
+    public User(String id, String username, String email, String firstname, String lastname, String password, LocalDate dateOfBirth, ArrayList<Workday> workdays, Workday currentWorkday){
+        this.username = username;
+        this.email = email;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.password = password;
+        this.dateOfBirth = dateOfBirth;
+        this.id = id;
+        this.workdays = workdays;
+        this.currentWorkday = currentWorkday;
+        workdays = new ArrayList<Workday>();
+    }
+
     public User(){
         id = UUID.randomUUID().toString();
         workdays = new ArrayList<Workday>();
+    }
+
+    //Return admin with user data
+    public Administrator getAdministrator(){
+        return new Administrator(id, username, email, firstname, lastname, password, dateOfBirth, workdays, currentWorkday);
     }
 
     //Clock user in, return if successful
@@ -145,6 +163,10 @@ public class User {
 
     public String getDateOfBirthFormated(){
         return dateOfBirth.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    }
+
+    public String getDateOfBirthUnix(){
+        return dateOfBirth.toString();
     }
 
     //End Processing Data
