@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="../../static/css/admin.css">
 <div th:replace="fragments/head :: head"></div>
 <body>
 <div th:replace="fragments/header :: header"></div>
@@ -21,28 +22,36 @@
                         <input class="form-item" type="time" name="start-time" id="start-time" th:value="${starttime}"/>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-set">
-                        <label class="form-item" for="end-date">Eind Datum</label>
-                        <input class="form-item" type="date" name="end-date" id="end-date" th:value="${enddate}"/>
+                <!-- This will only be rendered if the workday is finished -->
+                <th:block th:if="${isWorking == false}">
+                    <div class="form-row" >
+                        <div class="form-set">
+                            <label class="form-item" for="end-date">Eind Datum</label>
+                            <input class="form-item" type="date" name="end-date" id="end-date" th:value="${enddate}"/>
+                        </div>
+                        <div class="form-set">
+                            <label class="form-item" for="end-time">Eind Tijd</label>
+                            <input class="form-item" type="time" name="end-time" id="end-time" th:value="${endtime}"/>
+                        </div>
                     </div>
-                    <div class="form-set">
-                        <label class="form-item" for="end-time">Eind Tijd</label>
-                        <input class="form-item" type="time" name="end-time" id="end-time" th:value="${endtime}"/>
+                    <div class="form-row">
+                        <div class="form-set form-set-single">
+                            <label class="form-item" for="break-time">Pauze</label>
+                            <input class="form-item" type="time" name="break-time" id="break-time" th:value="${breaktime}"/>
+                        </div>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-set form-set-single">
-                        <label class="form-item" for="break-time">Pauze</label>
-                        <input class="form-item" type="time" name="break-time" id="break-time" th:value="${breaktime}"/>
+                    <div class="form-row">
+                        <div class="form-set form-set-single">
+                            <label class="form-item" for="validated">Gevalideerd</label>
+                            <input class="form-item" type="checkbox" name="validated" id="validated" th:checked="${validated}" th:disabled="${isWorking}"/>
+                        </div>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-set form-set-single">
-                        <label class="form-item" for="validated">Gevalideerd</label>
-                        <input class="form-item" type="checkbox" name="validated" id="validated" th:checked="${validated}"/>
+                </th:block>
+                <th:block th:unless="${isWorking == false}">
+                    <div class="form-row warning-box">
+                        <span class="warning">De gebruiker is momenteel aan het werk, hierdoor kan de werkdag <b>niet</b> gevalideerd worden!</span>
                     </div>
-                </div>
+                </th:block>
                 <div class="form-row">
                     <input class="button" type="submit" value="Opslaan">
                 </div>
