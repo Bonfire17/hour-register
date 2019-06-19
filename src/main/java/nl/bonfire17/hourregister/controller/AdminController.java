@@ -149,9 +149,20 @@ public class AdminController {
     public String loadUsersThatAreWorking(Model model){
         ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments, AdminController.ISWORKING);
         model.addAttribute("users", sendData);
-        model.addAttribute("header", "Administratoren");
+        model.addAttribute("header", "Actieve mederwerkers");
         return "admin/user-overview";
     }
+
+    //Load all users from a department
+    @GetMapping(path = "/user/department/{departmentId}")
+    public String loadUsersByDepartment(Model model, @PathVariable("departmentId") String departmentId){
+        Department department = DataProviderSingleton.getInstance().getDepartmentById(departmentId);
+        ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(department);
+        model.addAttribute("users", sendData);
+        model.addAttribute("header", "Department: " + department.getName());
+        return "admin/user-overview";
+    }
+
 
     /*
         User methods
@@ -177,6 +188,13 @@ public class AdminController {
 
     //Same method but with a default search parameter
     private ArrayList<HashMap<String, String>> getUserHashMapArray(ArrayList<Department> departments){
+        return getUserHashMapArray(departments, AdminController.ALLUSERS);
+    }
+
+    //Same method but with a single department parameter
+    private ArrayList<HashMap<String, String>> getUserHashMapArray(Department department){
+        ArrayList<Department> departments = new ArrayList<>();
+        departments.add(department);
         return getUserHashMapArray(departments, AdminController.ALLUSERS);
     }
 
