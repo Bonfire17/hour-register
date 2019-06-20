@@ -1,4 +1,4 @@
-.login {
+.clock-in {
     position: relative;
     margin: 30px auto;
     padding:0px;
@@ -7,7 +7,7 @@
     background-color: white;
 }
 
-.login h1 {
+.clock-in h1 {
     background-color: #E7717D;
     color: #FFFFFF;
     width: 100%;
@@ -18,7 +18,7 @@
     border-bottom: 1px solid #cfcfcf;
 }
 
-.login p.btn {
+.clock-in p.clockin {
     background-color: #E7717D;
     border: none;
     width: 238px;
@@ -32,17 +32,59 @@
     cursor: pointer;
 }
 
-.login p.btn:hover {
+.clock-in p.clockin:hover {
     background-color: #C6878D;
 }
 
-.login input[type = text], .login input[type = password] {
-    width: 280px;
+@media(max-width: 1000px){
+    .content{
+        margin-top: 0px;
+    }
+}.clock-out {
+     position: relative;
+     margin: 30px auto;
+     padding:0px;
+     width: 310px;
+     -webkit-box-shadow: 0 0 200px rgba(255, 255, 255, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3);
+     background-color: white;
+ }
+
+.clock-out h1 {
+    background-color: #E7717D;
+    color: #FFFFFF;
+    width: 100%;
+    padding: 0px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 40px;
+    border-bottom: 1px solid #cfcfcf;
 }
 
-input.login {
-    font-family: sans-serif;
-    font-size: 14px;
+.clock-out small {
+    font-family: Arial;
+    text-align: left;
+}
+
+.clock-out input {
+    margin: 0px 0px 6px -135px;
+}
+
+.clock-out p.clockout {
+    background-color: #E7717D;
+    border: none;
+    width: 238px;
+    color: white;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.clock-out p.clockout:hover {
+    background-color: #C6878D;
 }
 
 @media(max-width: 1000px){
