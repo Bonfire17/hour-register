@@ -4,7 +4,7 @@
     -webkit-box-shadow: 0 0 200px rgba(255, 255, 255, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-h1 {
+h1.login-header {
     font-family: Arial;
     padding: 10px 10px 10px;
     font-size: 15px;
@@ -13,16 +13,7 @@ h1 {
     color: dimgray;
 }
 
-tr.table-items {
-    font-family: Arial;
-    font-weight: bold;
-}
-
-tr {
-    font-family: Arial;
-}
-
-table, th, td {
+table.login-table, th.login-table-header, td.login-table-data {
     border: 1px solid black;
     border-collapse: collapse;
 }

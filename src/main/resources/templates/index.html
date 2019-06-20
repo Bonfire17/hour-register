@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="nl" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <link rel="stylesheet" type="text/css" th:href="@{css/login.css}">
-        <link rel="stylesheet" type="text/css" th:href="@{css/workday.css}">
-    </head>
+<div th:replace="fragments/head :: head"></div>
     <body>
-        <div th:fragment="header" class="header-div">
-            <h1 class="header-head">Admin Paneel</h1>
-        </div>
         <div class="login" style="text-align:center">
             <h1 style="font-family: Arial">Hour Register</h1>
             <form method="post" action="">
