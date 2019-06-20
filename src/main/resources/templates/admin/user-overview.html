@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="fragments/head :: head"></div>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div class="content flex-container">
+    <div class="item flex-item">
+        <div th:replace="fragments/navigation :: navigation"></div>
+    </div>
+    <div class="item flex-item">
+        <nav class="nav nav-sub">
+            <ul class="nav-list nav-sub-list">
+                <a class="nav-item nav-sub-item" th:href="@{/administrator/user}"><li>Gebruikers</li></a>
+                <a class="nav-item nav-sub-item" th:href="@{/administrator/user/admin}"><li>Administratoren</li></a>
+                <a class="nav-item nav-sub-item" th:href="@{/administrator/user/working}"><li>Aan het werk</li></a>
+            </ul>
+        </nav>
+    </div>
+    <div class="item flex-item">
+        <div class="item-content-wrapper">
+            <h2 class="content-head" th:text="${header}">Werkdagen</h2>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Voornaam</th>
+                            <th>Achternaam</th>
+                            <th>Geboorte Datum</th>
+                            <th>Afdeling</th>
+                            <th>Laatste Werkdag</th>
+                            <th>Aan get werk?</th>
+                            <th>Administrator?</th>
+                            <th>Aanpassen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user, iterStat : ${users}">
+                            <td th:text="${iterStat.index}"></td>
+                            <td th:text="${user.firstname}"></td>
+                            <td th:text="${user.lastname}"></td>
+                            <td th:text="${user.dateOfBirth}"></td>
+                            <td th:text="${user.department}"></td>
+                            <td th:text="${user.lastWorkday}"></td>
+                            <td th:text="${user.isWorking}"></td>
+                            <td th:text="${user.isAdmin}"></td>
+                            <td><a th:href="@{/administrator/user/{userId}(userId=${user.id})}">Aanpassen</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <form class="form" method="Get" th:action="@{/administrator/user/add}">
+                    <input class="button" type="submit" value="Toevoegen">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
