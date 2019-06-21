@@ -92,7 +92,6 @@ public class WorkdayController {
     //Delete a existing workday
     @PostMapping(path = "/delete/{workdayId}")
     public RedirectView deleteWorkday(@PathVariable("workdayId") String id) {
-        System.out.println(id);
         for (int i = 0; i < workdays.size(); i++) {
             if (workdays.get(i).getId().equals(id)) {
                 workdays.remove(i);
