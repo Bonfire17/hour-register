@@ -100,4 +100,11 @@ public class Department {
         return id;
     }
     //End Getters & Setters
+    //Processing Data
+
+    public int getUserCount(){
+        return this.users.size();
+    }
+
+    //End Processing Data
 }

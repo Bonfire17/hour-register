@@ -61,6 +61,16 @@ public class AdminController {
         return "admin/workday-overview";
     }
 
+    //Load all workdays for of a specific user
+    @GetMapping(path = "/workday/user/{userId}")
+    public String loadUserWorkdays(Model model, @PathVariable("userId") String id){
+        User user = DataProviderSingleton.getInstance().getUserById(id);
+        ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(user);
+        model.addAttribute("workdays", sendData);
+        model.addAttribute("header", "Gebruiker: " + user.getFirstname());
+        return "admin/workday-overview";
+    }
+
     //Load specific workday by id
     @GetMapping(path = "/workday/{workdayId}")
     public String loadWorkday(Model model, @PathVariable("workdayId") String id){
@@ -107,6 +117,17 @@ public class AdminController {
     private ArrayList<HashMap<String, String>> getWorkdayHashMapArray(ArrayList<User> users){
         return getWorkdayHashMapArray(users, AdminController.ALLWORKAYS);
     }
+
+    //Same method but with a single user parameter
+    private ArrayList<HashMap<String, String>> getWorkdayHashMapArray(User user){
+        ArrayList<HashMap<String, String>> sendData = new ArrayList<>();
+        ArrayList<Workday> workdays = user.getWorkdays();
+        for(Workday workday: workdays){
+            sendData.add(loadWorkdayHashmap(user, workday));
+        }
+        return sendData;
+    }
+
 
     //Load user data into a HashMap
     private HashMap<String, String> loadWorkdayHashmap(User user, Workday workday){
@@ -160,7 +181,7 @@ public class AdminController {
         Department department = DataProviderSingleton.getInstance().getDepartmentById(departmentId);
         ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(department);
         model.addAttribute("users", sendData);
-        model.addAttribute("header", "Department: " + department.getName());
+        model.addAttribute("header", "Afdeling: " + department.getName());
         return "admin/user-overview";
     }
 
@@ -258,5 +279,35 @@ public class AdminController {
         map.put("isWorking", user.isWorking() ? "Ja" : "Nee");
         map.put("isAdmin", user.isAdmin() ? "Ja" : "Nee");
         return map;
+    }
+
+    /*
+        Department GetMapping
+     */
+
+    //Load all workdays per user
+    @GetMapping(path = "/department")
+    public String defaultDepartmentPage(Model model){
+        ArrayList<HashMap<String, String>> sendData = getDepartmentHashMapArray(departments);
+        model.addAttribute("departments", sendData);
+        model.addAttribute("header", "Afdelingen");
+        return "admin/department-overview";
+    }
+
+    /*
+        Department Methods
+     */
+
+    private ArrayList<HashMap<String, String>> getDepartmentHashMapArray(ArrayList<Department> departments){
+        ArrayList<HashMap<String, String>> data = new ArrayList<>();
+        for(Department department: departments){
+            HashMap<String, String> map = new HashMap<>();
+            map.put("id", department.id);
+            map.put("name", department.getName());
+            map.put("info", department.getInfo());
+            map.put("userCount", Integer.toString(department.getUserCount()));
+            data.add(map);
+        }
+        return data;
     }
 }

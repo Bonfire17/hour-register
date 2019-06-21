@@ -36,7 +36,7 @@
                     </thead>
                     <tbody>
                         <tr th:each="user, iterStat : ${users}">
-                            <td th:text="${iterStat.index}"></td>
+                            <td><a th:text="${iterStat.index}" th:href="@{/administrator/workday/user/{userId}(userId=${user.id})}"></a></td>
                             <td th:text="${user.firstname}"></td>
                             <td th:text="${user.lastname}"></td>
                             <td th:text="${user.dateOfBirth}"></td>

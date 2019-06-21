@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="fragments/head :: head"></div>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div class="content flex-container">
+    <div class="item flex-item">
+        <div th:replace="fragments/navigation :: navigation"></div>
+    </div>
+    <div class="item flex-item">
+        <div class="item-content-wrapper">
+            <h2 class="content-head" th:text="${header}">Afdelingen</h2>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Naam</th>
+                        <th>Medewerkers</th>
+                        <th>Info</th>
+                        <th>Aanpassen</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="department, iterStat : ${departments}">
+                        <td><a th:href="@{/administrator/user/department/{departmentId}(departmentId=${department.id})}"  th:text="${iterStat.index}"></a></td>
+                        <td th:text="${department.name}"></td>
+                        <td th:text="${department.userCount}"></td>
+                        <td th:text="${department.info}"></td>
+                        <td><a th:href="@{/administrator/department/{departmentId}(departmentId=${department.id})}">Aanpassen</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <form class="form" method="Get" th:action="@{/administrator/department/add}">
+                    <input class="button" type="submit" value="Toevoegen">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

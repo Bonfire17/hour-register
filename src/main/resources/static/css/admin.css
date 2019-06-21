@@ -43,6 +43,15 @@ Header css
     padding-left: 15px;
     font-family: 'Open Sans', sans-serif;
 }
+
+.form-header{
+    float:right;
+}
+
+.header-button{
+    color: #E7717D;
+    background-color: #FFFFFF;
+}
 /*
 Navigation css
  */
