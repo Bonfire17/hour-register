@@ -5,7 +5,13 @@
     <body>
         <div class="clock-in" style="text-align: center">
             <h1 style="font-family: Arial">In Klokken</h1>
-            <p href="#" class="clockin">Start Werkdag</p>
+            <div style="text-align: left">
+            <input class="button" th:type="button" th:value="'Start werkdag'">
+                <form class="form" method="post" th:action="@{/logout}">
+                    <input class="button" th:type="submit" th:value="Uitloggen">
+                </form>
+            <input class="button" th:type="button" th:value="'Admin paneel'">
+            </div>
         </div>
     </body>
 </html>

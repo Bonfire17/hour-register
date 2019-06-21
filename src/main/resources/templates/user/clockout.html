@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="nl" xmlns:th="http://www.thymeleaf.org">
-<link href="../static/css/clockin.css" th:href="@{/css/clockin.css}" rel="stylesheet" />
-<div th:replace="fragments/head :: head"></div>
-<body>
-<div class="clock-out" style="text-align: center">
-    <h1 style="font-family: Arial">Uit Klokken</h1>
-    <input th:type="time" id="break-time" name="break-time">
-    <small>Pauze tijd</small>
-    <p href="#" class="clockout">Eindig Werkdag</p>
-</div>
-</body>
+    <link href="../static/css/clockin.css" th:href="@{/css/clockin.css}" rel="stylesheet" />
+    <div th:replace="fragments/head :: head"></div>
+    <body>
+        <div class="clock-in" style="text-align: center">
+            <h1 style="font-family: Arial">Uit Klokken</h1>
+            <input th:type="time" id="break-time" name="break-time">
+            <small>Pauze tijd</small>
+            <input class="button" th:type="button" th:value="'Eindig Werkdag'">
+            <div style="text-align: left">
+                <input class="button" th:type="button" th:value="'Admin paneel'">
+            </div>
+            <div style="text-align: left">
+                <input class="button" th:type="button" th:value="Uitloggen">
+            </div>
+        </div>
+    </body>
 </html>
