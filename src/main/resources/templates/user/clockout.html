@@ -5,13 +5,13 @@
     <body>
         <div class="clock-in" style="text-align: center">
             <h1 style="font-family: Arial">Uit Klokken</h1>
-            <input th:type="time" id="break-time" name="break-time">
-            <small>Pauze tijd</small>
-            <div style="text-align: left">
             <form class="form" method="post" th:action="@{/clocksystem/clockout}">
-            <input class="button" th:type="submit" th:value="'Eindig Werkdag'">
+                <input type="time" id="break-time" name="break" th:value="${lastbreaktime}">
+                <small>Pauze tijd</small>
+                <div style="text-align: left">
+                    <input class="button" th:type="submit" th:value="'Eindig Werkdag'">
+                </div>
             </form>
-            </div>
             <div style="text-align: left">
                 <form class="form" method="get" th:action="@{/administrator}">
                 <input class="button" th:type="submit" th:value="'Admin paneel'">
