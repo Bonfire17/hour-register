@@ -7,12 +7,20 @@
             <h1 style="font-family: Arial">Uit Klokken</h1>
             <input th:type="time" id="break-time" name="break-time">
             <small>Pauze tijd</small>
-            <input class="button" th:type="button" th:value="'Eindig Werkdag'">
             <div style="text-align: left">
-                <input class="button" th:type="button" th:value="'Admin paneel'">
+            <form class="form" method="post" th:action="@{/clocksystem/clockout}">
+            <input class="button" th:type="submit" th:value="'Eindig Werkdag'">
+            </form>
             </div>
             <div style="text-align: left">
-                <input class="button" th:type="button" th:value="Uitloggen">
+                <form class="form" method="get" th:action="@{/administrator}">
+                <input class="button" th:type="submit" th:value="'Admin paneel'">
+                </form>
+            </div>
+            <div style="text-align: left">
+                <form class="form" method="post" th:action="@{/logout}">
+                    <input class="button" th:type="submit" th:value="Uitloggen">
+                </form>
             </div>
         </div>
     </body>
