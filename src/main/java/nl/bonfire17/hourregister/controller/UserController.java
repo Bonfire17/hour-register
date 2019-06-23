@@ -137,6 +137,7 @@ public class UserController {
         return new RedirectView("/administrator/user");
     }
 
+    //Checks if current user is admin
     public boolean checkAdmin(HttpSession session) {
         for (int i = 0; i < this.users.size(); i++) {
             if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
