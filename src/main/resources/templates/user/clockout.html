@@ -4,12 +4,12 @@
     <div th:replace="fragments/head :: head"></div>
     <body>
         <div class="clock-in" style="text-align: center">
-            <h1 style="font-family: Arial">Uit Klokken</h1>
+            <h1 style="font-family: Arial" th:text="${username}"></h1>
             <form class="form" method="post" th:action="@{/clocksystem/clockout}">
                 <input type="time" id="break-time" name="break" th:value="${lastbreaktime}">
                 <small>Pauze tijd</small>
                 <div style="text-align: left">
-                    <input class="button" th:type="submit" th:value="'Eindig Werkdag'">
+                    <input class="button" th:type="submit" th:value="'Uitklokken'">
                 </div>
             </form>
             <div style="text-align: left" th:if="${isadmin == true}">

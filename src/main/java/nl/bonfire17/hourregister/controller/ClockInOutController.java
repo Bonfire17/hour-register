@@ -22,15 +22,17 @@ public class ClockInOutController {
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
 
     @GetMapping
-    public String defaultUserPage(HttpSession  session, Model model, @CookieValue(value = "lastbreaktime", defaultValue = "00:00") String cookieValue){
+    public String defaultUserPage(HttpSession  session, Model model, @CookieValue(value = "lastbreaktime", defaultValue = "00:00") String cookieValue, @RequestParam("username") String value){
         if (session.getAttribute("userId") != null) {
             for (int i = 0; i < this.users.size(); i++) {
                 if (session.getAttribute("userId").equals(this.users.get(i).id) && !this.users.get(i).isWorking()) {
                     model.addAttribute("isadmin", this.users.get(i).isAdmin());
+                    model.addAttribute("username", value);
                     return "user/clockin";
                 } else if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isWorking()) {
                     model.addAttribute("isadmin", this.users.get(i).isAdmin());
                     model.addAttribute("lastbreaktime", cookieValue);
+                    model.addAttribute("username", value);
                     return "user/clockout";
                 }
             }
@@ -41,18 +43,22 @@ public class ClockInOutController {
     @PostMapping(path = "/clockin")
     public RedirectView clockin(HttpSession session) {
 
+        String username = "N/A";
+
         for (int i = 0; i < this.users.size(); i++) {
             if (session.getAttribute("userId").equals(this.users.get(i).id) && !this.users.get(i).isWorking()) {
                 this.users.get(i).clockIn();
+                username = this.users.get(i).getUsername();
             }
         }
-        return new RedirectView("/clocksystem");
+        return new RedirectView("/clocksystem?username=" + username);
     }
 
     @PostMapping(path = "/clockout")
     public RedirectView clockout (HttpSession session, HttpServletResponse response, @RequestParam(name = "break", required = false) String breaktime) {
 
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String username = "N/A";
 
         for (int i = 0; i < this.users.size(); i++) {
             if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isWorking()) {
@@ -64,8 +70,9 @@ public class ClockInOutController {
                 } else {
                     this.users.get(i).clockOut(LocalTime.parse("00:00", timeFormatter));
                 }
+                username = this.users.get(i).getUsername();
             }
         }
-        return new RedirectView("/clocksystem");
+        return new RedirectView("/clocksystem?username=" + username);
     }
 }

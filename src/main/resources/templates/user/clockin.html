@@ -4,10 +4,10 @@
 <div th:replace="fragments/head :: head"></div>
     <body>
         <div class="clock-in" style="text-align: center">
-            <h1 style="font-family: Arial">In Klokken</h1>
+            <h1 style="font-family: Arial" th:text="${username}"></h1>
             <div style="text-align: left">
                 <form class="form" method="post" th:action="@{/clocksystem/clockin}">
-            <input class="button" th:type="submit" th:value="'Start werkdag'">
+            <input class="button" th:type="submit" th:value="'Inklokken'">
                 </form>
                 <form class="form" method="post" th:action="@{/logout}">
                     <input class="button" th:type="submit" th:value="Uitloggen">

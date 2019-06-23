@@ -46,7 +46,7 @@ public class LoginController {
                 session.setAttribute("userId", this.users.get(i).id);
                 session.setMaxInactiveInterval(300);
 
-                return new RedirectView("/clocksystem");
+                return new RedirectView("/clocksystem?username=" + username);
             }
         }
         Cookie cookie = new Cookie("isWrong", "true");
