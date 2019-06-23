@@ -16,8 +16,8 @@ import java.util.ArrayList;
 @RequestMapping("/department")
 public class DepartmentController {
 
-    private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
+    private ArrayList<Department> departments;
+    private ArrayList<User> users;
 
     //Admin
     //Edit a existing department
@@ -66,6 +66,7 @@ public class DepartmentController {
         }
 
         if(departmentValidated){
+            departments = DataProviderSingleton.getInstance().getDepartments();
             departments.add(new Department(name, info));
             return new RedirectView("/administrator/department");
         }else{
@@ -89,6 +90,7 @@ public class DepartmentController {
                 user.getWorkdays().clear();
             }
             department.getUsers().clear();
+            departments = DataProviderSingleton.getInstance().getDepartments();
             departments.remove(department);
             return new RedirectView("/administrator/department");
         }
@@ -118,8 +120,9 @@ public class DepartmentController {
 
     //Checks if current user is admin
     public boolean checkAdmin(HttpSession session) {
-        for (int i = 0; i < this.users.size(); i++) {
-            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+        if(session != null && session.getAttribute("userId") != null){
+            User user = DataProviderSingleton.getInstance().getUserById(session.getAttribute("userId").toString());
+            if(user != null && user.isAdmin()){
                 return true;
             }
         }

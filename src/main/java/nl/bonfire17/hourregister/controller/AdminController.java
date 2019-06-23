@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
+import javax.xml.crypto.Data;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,9 +25,9 @@ import java.util.HashMap;
 @RequestMapping("/administrator")
 public class AdminController {
 
-    private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
-    private ArrayList<Workday> workdays = DataProviderSingleton.getInstance().getWorkdays();
+    private ArrayList<Department> departments;
+    private ArrayList<User> users;
+    private ArrayList<Workday> workdays;
 
     private static final String ADMIN = "ADMIN";
     private static final String ISWORKING = "ISWORKING";
@@ -56,6 +57,7 @@ public class AdminController {
         if (!checkAdmin(session)) {
             return "redirect:/";//error
         }
+        users = DataProviderSingleton.getInstance().getUsers();
         ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(users);
         model.addAttribute("workdays", sendData);
         model.addAttribute("header", "Werkdagen");
@@ -69,6 +71,7 @@ public class AdminController {
         if (!checkAdmin(session)) {
             return "redirect:/";//error
         }
+        users = DataProviderSingleton.getInstance().getUsers();
         ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(users, AdminController.UNVALIDATED);
         model.addAttribute("workdays", sendData);
         model.addAttribute("header", "Ongevalideerde Werkdagen");
@@ -93,7 +96,8 @@ public class AdminController {
             return "redirect:/";//error
         }
         Workday workday = null;
-        for(Workday workdayTemp: DataProviderSingleton.getInstance().getWorkdays()){
+        workdays = DataProviderSingleton.getInstance().getWorkdays();
+        for(Workday workdayTemp: workdays){
             if(workdayTemp.id.equals(id)){
                 workday = workdayTemp;
             }
@@ -173,6 +177,7 @@ public class AdminController {
         if (!checkAdmin(session)) {
             return "redirect:/";//error
         }
+        departments = DataProviderSingleton.getInstance().getDepartments();
         ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments);
         model.addAttribute("users", sendData);
         model.addAttribute("header", "Gerbuikers");
@@ -186,6 +191,7 @@ public class AdminController {
         if (!checkAdmin(session)) {
             return "redirect:/";//error
         }
+        departments = DataProviderSingleton.getInstance().getDepartments();
         ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments, AdminController.ADMIN);
         model.addAttribute("users", sendData);
         model.addAttribute("header", "Administratoren");
@@ -199,6 +205,7 @@ public class AdminController {
         if (!checkAdmin(session)) {
             return "redirect:/";//error
         }
+        departments = DataProviderSingleton.getInstance().getDepartments();
         ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments, AdminController.ISWORKING);
         model.addAttribute("users", sendData);
         model.addAttribute("header", "Actieve mederwerkers");
@@ -334,6 +341,7 @@ public class AdminController {
         if (!checkAdmin(session)) {
             return "redirect:/";//error
         }
+        departments = DataProviderSingleton.getInstance().getDepartments();
         ArrayList<HashMap<String, String>> sendData = getDepartmentHashMapArray(departments);
         model.addAttribute("departments", sendData);
         model.addAttribute("header", "Afdelingen");
@@ -388,8 +396,9 @@ public class AdminController {
 
     //Checks if current user is admin
     public boolean checkAdmin(HttpSession session) {
-        for (int i = 0; i < this.users.size(); i++) {
-            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+        if(session != null && session.getAttribute("userId") != null){
+            User user = DataProviderSingleton.getInstance().getUserById(session.getAttribute("userId").toString());
+            if(user != null && user.isAdmin()){
                 return true;
             }
         }

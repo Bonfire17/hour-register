@@ -102,4 +102,19 @@ public class DataProviderSingleton {
         }
         return workdays;
     }
+
+    public Workday getWorkdayById(String id){
+        for(int i = 0; i < departments.size(); i++){
+            Department department = departments.get(i);
+            for(int j = 0; j < department.getUsers().size(); j++){
+                User user = department.getUsers().get(j);
+                for(Workday workday: user.getWorkdays()){
+                    if(workday.id.equals(id)){
+                        return workday;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

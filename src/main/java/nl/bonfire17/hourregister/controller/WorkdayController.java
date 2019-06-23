@@ -6,6 +6,7 @@ import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.models.Workday;
 import nl.bonfire17.hourregister.wrappers.WorkdayUserWrapper;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -14,6 +15,7 @@ import javax.xml.crypto.Data;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,45 +28,70 @@ import java.util.HashMap;
 @RequestMapping("/workday")
 public class WorkdayController {
 
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
-    private ArrayList<Workday> workdays = DataProviderSingleton.getInstance().getWorkdays();
+    private ArrayList<User> users;
+    private ArrayList<Workday> workdays;
 
     //Admin
     //Edit a existing workday
     @PostMapping(path = "/edit/{workdayId}")
-    public RedirectView editWorkday(@RequestParam(name = "start-date") String startdate,
-                                   @RequestParam(name = "start-time") String starttime,
+    public RedirectView editWorkday(@RequestParam(name = "start-date", required = false) String startdate,
+                                   @RequestParam(name = "start-time", required = false) String starttime,
                                    @RequestParam(name = "end-date", required = false) String enddate,
                                    @RequestParam(name = "end-time", required = false) String endtime,
                                    @RequestParam(name = "break-time", required = false) String breaktime,
                                    @RequestParam(name = "validated", required = false) String validated,
                                    @PathVariable("workdayId") String id, HttpSession session) {
 
+        boolean inputValid = true;
+
         if (!checkAdmin(session)) {
-            return new RedirectView("/error");//error
+            return new RedirectView("/admin/error");
         }
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        for (int i = 0; i < workdays.size(); i++) {
-            if (workdays.get(i).getId().equals(id)) {
-                Workday workday = workdays.get(i);
-                workday.setStartTime(LocalDateTime.parse(startdate + " " + starttime, dateTimeFormatter));
+        Workday workday = DataProviderSingleton.getInstance().getWorkdayById(id);
+        if(workday == null){
+            inputValid = false;
+        }
 
-                //The administrator should only change the endtime/enddate/validate when the user has clocked out.
-                if(!workday.isWorking()) {
-                    workday.setEndTime(LocalDateTime.parse(enddate + " " + endtime, dateTimeFormatter));
-                    workday.setBreakTime(LocalTime.parse(breaktime, timeFormatter));
-                    if (validated != null) {
-                        workday.setValidated(true);
-                    } else {
-                        workday.setValidated(false);
-                    }
+        //Validate user input
+        if((startdate == null || starttime == null) || ((enddate == null || endtime == null || breaktime == null) && !workday.isWorking())){
+            inputValid = false;
+        }
+
+        //Validate if time can be parsed
+        LocalDateTime startParsed = null;
+        LocalDateTime endParsed = null;
+        LocalTime breakParsed = null;
+        try {
+            startParsed = LocalDateTime.parse(startdate + " " + starttime, dateTimeFormatter);
+            if (!workday.isWorking()) {
+                endParsed = LocalDateTime.parse(enddate + " " + endtime, dateTimeFormatter);
+                breakParsed = LocalTime.parse(breaktime, timeFormatter);
+            }
+        }catch (DateTimeParseException e){
+            inputValid = false;
+        }
+
+        if(inputValid){
+            workday.setStartTime(startParsed);
+            //The administrator should only change the endtime/enddate/validate when the user has clocked out.
+            if (!workday.isWorking()) {
+                workday.setEndTime(endParsed);
+                workday.setBreakTime(breakParsed);
+                if (validated != null) {
+                    workday.setValidated(true);
+                } else {
+                    workday.setValidated(false);
                 }
             }
+            return new RedirectView("/administrator/workday");
+        }else{
+            return new RedirectView("/user/error?msg=input");
         }
-        return new RedirectView("/administrator/workday");
+
     }
 
     //Admin
@@ -75,7 +102,10 @@ public class WorkdayController {
         if (!checkAdmin(session)) {
             return new RedirectView("/error");//error
         }
-        System.out.println(id);
+
+        workdays = DataProviderSingleton.getInstance().getWorkdays();
+        users = DataProviderSingleton.getInstance().getUsers();
+
         for (int i = 0; i < workdays.size(); i++) {
             if (workdays.get(i).getId().equals(id)) {
                 workdays.remove(i);
@@ -91,12 +121,33 @@ public class WorkdayController {
         return new RedirectView("/administrator/workday");
     }
 
+    @GetMapping(path = "/error")
+    public String loadErrorPage(Model model, @RequestParam("msg") String msg) {
+        switch (msg) {
+            case "input":
+                model.addAttribute("message", "Uw ingevoerde gegevens kloppen niet!");
+                break;
+            default:
+                model.addAttribute("message", "O ow, er is hier iets niet pluis gegaan D:");
+                break;
+        }
+        return "/admin/error";
+    }
+
     //Checks if current user is admin
     public boolean checkAdmin(HttpSession session) {
-        for (int i = 0; i < this.users.size(); i++) {
-            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+        if(session != null && session.getAttribute("userId") != null){
+            User user = DataProviderSingleton.getInstance().getUserById(session.getAttribute("userId").toString());
+            if(user != null && user.isAdmin()){
                 return true;
             }
+        }
+        return false;
+    }
+
+    private boolean validateString(String string){
+        if(string != null && !string.equals("")){
+            return true;
         }
         return false;
     }

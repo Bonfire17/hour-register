@@ -19,11 +19,12 @@ import java.util.ArrayList;
 @RequestMapping("/clocksystem")
 public class ClockInOutController {
 
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
+    private ArrayList<User> users;
 
     //Checks if you are clocked in and sends you to the right page.
     @GetMapping
     public String defaultUserPage(HttpSession  session, Model model, @CookieValue(value = "lastbreaktime", defaultValue = "00:00") String cookieValue, @RequestParam("username") String value){
+        users = DataProviderSingleton.getInstance().getUsers();
         if (session.getAttribute("userId") != null) {
             for (int i = 0; i < this.users.size(); i++) {
                 if (session.getAttribute("userId").equals(this.users.get(i).id) && !this.users.get(i).isWorking()) {

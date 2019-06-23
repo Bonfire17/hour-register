@@ -22,13 +22,15 @@ import java.util.Calendar;
 @RequestMapping
 public class LoginController {
 
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
+    private ArrayList<User> users;
 
     //Used for login screen
     @GetMapping
     public String login(HttpSession session, Model model, @CookieValue(name = "isWrong", defaultValue = "false") boolean isWrong) {
 
         String username = "N/A";
+
+        users = DataProviderSingleton.getInstance().getUsers();
 
         if (session.getAttribute("userId") != null){
             for (int i = 0; i < this.users.size(); i++) {
@@ -50,6 +52,8 @@ public class LoginController {
     public RedirectView loginCheck(@RequestParam(name = "username") String username,
                                    @RequestParam(name = "password") String password,
                                    HttpSession session, HttpServletResponse response) {
+
+        users = DataProviderSingleton.getInstance().getUsers();
 
         for (int i = 0; i < this.users.size(); i++) {
             if (username.equals(this.users.get(i).getUsername()) && password.equals(this.users.get(i).getPassword())) {
