@@ -41,7 +41,7 @@ public class WorkdayController {
                                    @PathVariable("workdayId") String id, HttpSession session) {
 
         if (!checkAdmin(session)) {
-            return new RedirectView("");//error
+            return new RedirectView("/error");//error
         }
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -73,7 +73,7 @@ public class WorkdayController {
     public RedirectView deleteWorkday(@PathVariable("workdayId") String id, HttpSession session) {
 
         if (!checkAdmin(session)) {
-            return new RedirectView("");//error
+            return new RedirectView("/error");//error
         }
         System.out.println(id);
         for (int i = 0; i < workdays.size(); i++) {

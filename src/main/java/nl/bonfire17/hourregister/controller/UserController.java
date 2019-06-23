@@ -38,7 +38,7 @@ public class UserController {
                         @RequestParam(name = "department") String departmentId, HttpSession session) {
 
         if (!checkAdmin(session)) {
-            return new RedirectView("");//error
+            return new RedirectView("/department/error");//error
         }
 
         if(administrator != null) {
@@ -63,7 +63,7 @@ public class UserController {
                                  @RequestParam(name = "new-password", required = false) String newPassword, HttpSession session) {
 
         if (!checkAdmin(session)) {
-            return new RedirectView("");//error
+            return new RedirectView("/department/error");//error
         }
 
         User user = DataProviderSingleton.getInstance().getUserById(id);
@@ -92,7 +92,7 @@ public class UserController {
     public RedirectView transferUser(@PathVariable(name = "id") String id, @RequestParam(name = "department") String targetDepartment, HttpSession session) {
 
         if (!checkAdmin(session)) {
-            return new RedirectView("");//error
+            return new RedirectView("/department/error");//error
         }
         Department oldDepartment, newDepartment;
         User transferUser;
@@ -118,7 +118,7 @@ public class UserController {
     public RedirectView transferUser(@PathVariable(name = "id") String id, HttpSession session) {
 
         if (!checkAdmin(session)) {
-            return new RedirectView("");//error
+            return new RedirectView("/department/error");//error
         }
         for(Department department: departments) {
             for (int i = 0; i < department.getUsers().size(); i++) {

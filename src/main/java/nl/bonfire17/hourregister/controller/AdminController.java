@@ -329,7 +329,11 @@ public class AdminController {
 
     //Load all departments
     @GetMapping(path = "/department")
-    public String defaultDepartmentPage(Model model){
+    public String defaultDepartmentPage(Model model, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
+        }
         ArrayList<HashMap<String, String>> sendData = getDepartmentHashMapArray(departments);
         model.addAttribute("departments", sendData);
         model.addAttribute("header", "Afdelingen");
@@ -338,7 +342,11 @@ public class AdminController {
 
     //Load a department by id in a edit form
     @GetMapping(path = "/department/{id}")
-    public String loadEditDepartmentForm(Model model, @PathVariable("id") String id){
+    public String loadEditDepartmentForm(Model model, @PathVariable("id") String id, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
+        }
         Department department = DataProviderSingleton.getInstance().getDepartmentById(id);
         model.addAttribute("id", id);
         model.addAttribute("name", department.getName());
@@ -350,7 +358,11 @@ public class AdminController {
 
     //Load a add department form
     @GetMapping(path = "/department/add")
-    public String loadAddDepartmentForm(Model model){
+    public String loadAddDepartmentForm(Model model, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
+        }
         model.addAttribute("add", true);
         model.addAttribute("action", "/department/add");
         return "admin/department";
@@ -372,5 +384,15 @@ public class AdminController {
             data.add(map);
         }
         return data;
+    }
+
+    //Checks if current user is admin
+    public boolean checkAdmin(HttpSession session) {
+        for (int i = 0; i < this.users.size(); i++) {
+            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
