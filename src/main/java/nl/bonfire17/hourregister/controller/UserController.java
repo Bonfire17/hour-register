@@ -4,13 +4,14 @@ import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
+import nl.bonfire17.hourregister.wrappers.UserDepartmentWrapper;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 /*
@@ -27,111 +28,72 @@ public class UserController {
     //Admin
     //Add a new user
     @PostMapping(path = "/add")
-    public RedirectView addUser(@RequestParam(name = "username", required = false) String username,
-                        @RequestParam(name = "email", required = false) String email,
-                        @RequestParam(name = "firstname", required = false) String firstname,
-                        @RequestParam(name = "lastname", required = false) String lastname,
-                        @RequestParam(name = "date-of-birth", required = false) String dateOfBirth,
+    public RedirectView addUser(@RequestParam(name = "username") String username,
+                        @RequestParam(name = "email") String email,
+                        @RequestParam(name = "firstname") String firstname,
+                        @RequestParam(name = "lastname") String lastname,
+                        @RequestParam(name = "date-of-birth") String dateOfBirth,
                         @RequestParam(name = "administrator", required = false) String administrator,
-                        @RequestParam(name = "password", required = false) String password,
-                        @RequestParam(name = "department", required = false) String departmentId) {
-        boolean userValidate = true;
+                        @RequestParam(name = "password") String password,
+                        @RequestParam(name = "department") String departmentId, HttpSession session) {
 
-        //Validate if all params are set
-        if(!validateString(username) || !validateString(email) || !validateString(firstname) || !validateString(lastname) ||
-                !validateString(dateOfBirth) || !validateString(password) || !validateString(departmentId)){
-            userValidate = false;
+        if (!checkAdmin(session)) {
+            return new RedirectView("/department/error");//error
         }
 
-        //Validate if department exist
-        if(DataProviderSingleton.getInstance().getDepartmentById(departmentId) == null){
-            userValidate = false;
-        }
-
-        //Try to parse the date
-        LocalDate parsedDateOfBirth = null;
-        try{
-            parsedDateOfBirth = LocalDate.parse(dateOfBirth);
-        }catch (DateTimeParseException e){
-            userValidate = false;
-        }
-
-        if(userValidate) {
-            if (administrator != null) {
-                DataProviderSingleton.getInstance().getDepartmentById(departmentId).addUser(new Administrator(username, email, firstname, lastname, password, parsedDateOfBirth));
-            } else {
-                DataProviderSingleton.getInstance().getDepartmentById(departmentId).addUser(new User(username, email, firstname, lastname, password, LocalDate.parse(dateOfBirth)));
-            }
-            return new RedirectView("/administrator/user");
+        if(administrator != null) {
+            DataProviderSingleton.getInstance().getDepartmentById(departmentId).addUser(new Administrator(username, email, firstname, lastname, password, LocalDate.parse(dateOfBirth)));
         }else{
-            return new RedirectView("/user/error?msg=input");
+            DataProviderSingleton.getInstance().getDepartmentById(departmentId).addUser(new User(username, email, firstname, lastname, password, LocalDate.parse(dateOfBirth)));
         }
+        return new RedirectView("/administrator/user");
     }
 
     //Admin
     //Edit a existing user
     @PostMapping(path = "/edit/{id}")
-    public RedirectView editUser(@PathVariable(name = "id", required = false) String id,
-                                 @RequestParam(name = "username", required = false) String username,
-                                 @RequestParam(name = "email", required = false) String email,
-                                 @RequestParam(name = "firstname", required = false) String firstname,
-                                 @RequestParam(name = "lastname", required = false) String lastname,
-                                 @RequestParam(name = "date-of-birth", required = false) String dateOfBirth,
+    public RedirectView editUser(@PathVariable(name = "id") String id,
+                                 @RequestParam(name = "username") String username,
+                                 @RequestParam(name = "email") String email,
+                                 @RequestParam(name = "firstname") String firstname,
+                                 @RequestParam(name = "lastname") String lastname,
+                                 @RequestParam(name = "date-of-birth") String dateOfBirth,
                                  @RequestParam(name = "administrator", required = false) String administrator,
                                  @RequestParam(name = "old-password", required = false) String oldPassword,
-                                 @RequestParam(name = "new-password", required = false) String newPassword) {
-        boolean userValidate = true;
+                                 @RequestParam(name = "new-password", required = false) String newPassword, HttpSession session) {
 
-        //Validate id
-        if(DataProviderSingleton.getInstance().getUserById(id) == null){
-            userValidate = false;
+        if (!checkAdmin(session)) {
+            return new RedirectView("/department/error");//error
         }
 
-        //Validate if all params are set
-        if(!validateString(username) || !validateString(email) || !validateString(firstname) || !validateString(lastname) ||
-                !validateString(dateOfBirth)){
-            userValidate = false;
+        User user = DataProviderSingleton.getInstance().getUserById(id);
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+        user.setDateOfBirth(LocalDate.parse(dateOfBirth));
+
+        //Check if the administrator box is checked AND if the user is not already a administrator
+        if(administrator != null && !(user instanceof Administrator)){
+            DataProviderSingleton.getInstance().replaceUser(user.getAdministrator());
+        }else if(administrator == null && user instanceof Administrator){
+            DataProviderSingleton.getInstance().replaceUser(((Administrator) user).getUser());
         }
-
-        //Try to parse the date
-        LocalDate parsedDateOfBirth = null;
-        try{
-            parsedDateOfBirth = LocalDate.parse(dateOfBirth);
-        }catch (DateTimeParseException e) {
-            userValidate = false;
+        System.out.println(user.isAdmin());
+        if(oldPassword == user.getPassword()){
+            user.setPassword(newPassword);
         }
-
-        //If input is valid
-        if(userValidate) {
-            User user = DataProviderSingleton.getInstance().getUserById(id);
-            user.setUsername(username);
-            user.setEmail(email);
-            user.setFirstname(firstname);
-            user.setLastname(lastname);
-            user.setDateOfBirth(parsedDateOfBirth);
-
-            //Check if the administrator box is checked AND if the user is not already a administrator
-            if (administrator != null && !(user instanceof Administrator)) {
-                DataProviderSingleton.getInstance().replaceUser(user.getAdministrator());
-            } else if (administrator == null && user instanceof Administrator) {
-                DataProviderSingleton.getInstance().replaceUser(((Administrator) user).getUser());
-            }
-
-            if (oldPassword.equals(user.getPassword()) && validateString(oldPassword) && validateString(newPassword)) {
-                user.setPassword(newPassword);
-            }else if(validateString(oldPassword) || validateString(newPassword)){
-                return new RedirectView("/user/error?msg=password");
-            }
-            return new RedirectView("/administrator/user");
-        }else{
-            return new RedirectView("/user/error?msg=input");
-        }
+        return new RedirectView("/administrator/user");
     }
 
     //Admin
     //Transfer a user from one department to another
     @PostMapping(path = "/transfer/{id}")
-    public RedirectView transferUser(@PathVariable(name = "id") String id, @RequestParam(name = "department") String targetDepartment) {
+    public RedirectView transferUser(@PathVariable(name = "id") String id, @RequestParam(name = "department") String targetDepartment, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("/department/error");//error
+        }
         Department oldDepartment, newDepartment;
         User transferUser;
 
@@ -153,7 +115,11 @@ public class UserController {
     //Admin
     //Delete a user
     @PostMapping(path = "/delete/{id}")
-    public RedirectView transferUser(@PathVariable(name = "id") String id) {
+    public RedirectView transferUser(@PathVariable(name = "id") String id, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("/department/error");//error
+        }
         for(Department department: departments) {
             for (int i = 0; i < department.getUsers().size(); i++) {
                 if (department.getUsers().get(i).id.equals(id)) {
@@ -171,30 +137,15 @@ public class UserController {
         return new RedirectView("/administrator/user");
     }
 
-    /*
-        Error Page
-     */
-
-    @GetMapping(path = "/error")
-    public String loadErrorPage(Model model, @RequestParam("msg") String msg){
-        switch (msg){
-            case "input":
-                model.addAttribute("message", "Uw ingevoerde gegevens kloppen niet!");
-                break;
-            case "password":
-                model.addAttribute("message", "Het oude wachtwoord klopte niet!");
-                break;
-            default:
-                model.addAttribute("message", "O ow, er is hier iets niet pluis gegaan D:");
-                break;
-        }
-        return "/admin/error";
-    }
-
-    private boolean validateString(String string){
-        if(string != null && !string.equals("")){
-            return true;
+    //Checks if current user is admin
+    public boolean checkAdmin(HttpSession session) {
+        for (int i = 0; i < this.users.size(); i++) {
+            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+                return true;
+            }
         }
         return false;
     }
+
+
 }

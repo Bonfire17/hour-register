@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 
 @Controller
@@ -16,13 +17,18 @@ import java.util.ArrayList;
 public class DepartmentController {
 
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
+    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
 
     //Admin
     //Edit a existing department
     @PostMapping(path = "/edit/{departmentId}")
     public RedirectView editDepartment(@PathVariable(value = "departmentId", required = false) String id,
                                        @RequestParam(value = "department-name", required = false) String name,
-                                       @RequestParam(value = "department-info", required = false, defaultValue = "") String info) {
+                                       @RequestParam(value = "department-info", required = false, defaultValue = "") String info, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("/department/error");//error
+        }
         boolean departmentValidated = true;
 
         Department department = DataProviderSingleton.getInstance().getDepartmentById(id);
@@ -46,7 +52,11 @@ public class DepartmentController {
     //Add a new Department
     @PostMapping(path = "/add")
     public RedirectView editDepartment(@RequestParam(value = "department-name", required = false) String name,
-                                       @RequestParam(value = "department-info", required = false, defaultValue = "") String info) {
+                                       @RequestParam(value = "department-info", required = false, defaultValue = "") String info, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("department/error");//error
+        }
         boolean departmentValidated = true;
 
         //Check if the department exists
@@ -66,7 +76,11 @@ public class DepartmentController {
     //Admin
     //Delete a existing department
     @PostMapping(path = "/delete/{id}")
-    public RedirectView deleteDepartment(@PathVariable("id") String id){
+    public RedirectView deleteDepartment(@PathVariable("id") String id, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("department/error");//error
+        }
         Department department = DataProviderSingleton.getInstance().getDepartmentById(id);
         //Check if the department exists
         if(department != null){
@@ -98,6 +112,16 @@ public class DepartmentController {
     private boolean validateString(String string){
         if(string != null && !string.equals("")){
             return true;
+        }
+        return false;
+    }
+
+    //Checks if current user is admin
+    public boolean checkAdmin(HttpSession session) {
+        for (int i = 0; i < this.users.size(); i++) {
+            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+                return true;
+            }
         }
         return false;
     }

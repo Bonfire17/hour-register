@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<link href="../static/css/clockin.css" th:href="@{/css/clockin.css}" rel="stylesheet" />
+<div th:replace="fragments/head :: head"></div>
+    <body>
+        <div class="clock-in" style="text-align: center">
+            <h1 style="font-family: Arial" th:text="${username}"></h1>
+            <div style="text-align: left">
+                <form class="form" method="post" th:action="@{/clocksystem/clockin}">
+            <input class="button" th:type="submit" th:value="'Inklokken'">
+                </form>
+                <form class="form" method="post" th:action="@{/logout}">
+                    <input class="button" th:type="submit" th:value="Uitloggen">
+                </form>
+                <div th:if="${isadmin == true}">
+                    <form class="form" method="get" th:action="@{/administrator}">
+                    <input class="button" th:type="submit" th:value="'Admin paneel'">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
