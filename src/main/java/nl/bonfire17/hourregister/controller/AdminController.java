@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /*
-    Only the admin should jave access to the controller. All admin panel getters are here!
+    Only the admin should have access to the controller. All admin panel getters are here!
  */
 
 @Controller
@@ -75,6 +75,16 @@ public class AdminController {
         return "admin/workday-overview";
     }
 
+    //Load all workdays for of a specific user
+    @GetMapping(path = "/workday/user/{userId}")
+    public String loadUserWorkdays(Model model, @PathVariable("userId") String id){
+        User user = DataProviderSingleton.getInstance().getUserById(id);
+        ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(user);
+        model.addAttribute("workdays", sendData);
+        model.addAttribute("header", "Gebruiker: " + user.getFirstname());
+        return "admin/workday-overview";
+    }
+
     //Load specific workday by id
     @GetMapping(path = "/workday/{workdayId}")
     public String loadWorkday(Model model, @PathVariable("workdayId") String id, HttpSession session) {
@@ -125,6 +135,17 @@ public class AdminController {
     private ArrayList<HashMap<String, String>> getWorkdayHashMapArray(ArrayList<User> users){
         return getWorkdayHashMapArray(users, AdminController.ALLWORKAYS);
     }
+
+    //Same method but with a single user parameter
+    private ArrayList<HashMap<String, String>> getWorkdayHashMapArray(User user){
+        ArrayList<HashMap<String, String>> sendData = new ArrayList<>();
+        ArrayList<Workday> workdays = user.getWorkdays();
+        for(Workday workday: workdays){
+            sendData.add(loadWorkdayHashmap(user, workday));
+        }
+        return sendData;
+    }
+
 
     //Load user data into a HashMap
     private HashMap<String, String> loadWorkdayHashmap(User user, Workday workday){
@@ -302,13 +323,54 @@ public class AdminController {
         return map;
     }
 
-    //Checks if current user is admin
-    public boolean checkAdmin(HttpSession session) {
-        for (int i = 0; i < this.users.size(); i++) {
-            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
-                return true;
-            }
+    /*
+        Department GetMapping
+     */
+
+    //Load all departments
+    @GetMapping(path = "/department")
+    public String defaultDepartmentPage(Model model){
+        ArrayList<HashMap<String, String>> sendData = getDepartmentHashMapArray(departments);
+        model.addAttribute("departments", sendData);
+        model.addAttribute("header", "Afdelingen");
+        return "admin/department-overview";
+    }
+
+    //Load a department by id in a edit form
+    @GetMapping(path = "/department/{id}")
+    public String loadEditDepartmentForm(Model model, @PathVariable("id") String id){
+        Department department = DataProviderSingleton.getInstance().getDepartmentById(id);
+        model.addAttribute("id", id);
+        model.addAttribute("name", department.getName());
+        model.addAttribute("info", department.getInfo());
+        model.addAttribute("add", false);
+        model.addAttribute("action", "/department/edit/"+id);
+        return "admin/department";
+    }
+
+    //Load a add department form
+    @GetMapping(path = "/department/add")
+    public String loadAddDepartmentForm(Model model){
+        model.addAttribute("add", true);
+        model.addAttribute("action", "/department/add");
+        return "admin/department";
+    }
+
+
+    /*
+        Department Methods
+     */
+
+    private ArrayList<HashMap<String, String>> getDepartmentHashMapArray(ArrayList<Department> departments){
+        ArrayList<HashMap<String, String>> data = new ArrayList<>();
+        for(Department department: departments){
+            HashMap<String, String> map = new HashMap<>();
+            map.put("id", department.id);
+            map.put("name", department.getName());
+            map.put("info", department.getInfo());
+            map.put("userCount", Integer.toString(department.getUserCount()));
+            data.add(map);
         }
-        return false;
+        return data;
     }
 }
