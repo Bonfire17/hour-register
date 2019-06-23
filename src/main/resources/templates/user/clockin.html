@@ -12,9 +12,11 @@
                 <form class="form" method="post" th:action="@{/logout}">
                     <input class="button" th:type="submit" th:value="Uitloggen">
                 </form>
-                <form class="form" method="get" th:action="@{/administrator}">
-            <input class="button" th:type="submit" th:value="'Admin paneel'">
-                </form>
+                <div th:if="${isadmin == true}">
+                    <form class="form" method="get" th:action="@{/administrator}">
+                    <input class="button" th:type="submit" th:value="'Admin paneel'">
+                    </form>
+                </div>
             </div>
         </div>
     </body>

@@ -12,7 +12,7 @@
                     <input class="button" th:type="submit" th:value="'Eindig Werkdag'">
                 </div>
             </form>
-            <div style="text-align: left">
+            <div style="text-align: left" th:if="${isadmin == true}">
                 <form class="form" method="get" th:action="@{/administrator}">
                 <input class="button" th:type="submit" th:value="'Admin paneel'">
                 </form>

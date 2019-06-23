@@ -10,6 +10,9 @@
             <form class="form" method="post" th:action="@{/logincheck}">
                 <p style="text-align: center"><input type="text" name="username" value="" placeholder="Gebruikersnaam"></p>
                 <p style="text-align: center"><input type="password" name="password" value="" placeholder="Wachtwoord"></p>
+                <div class="form-row warning-box" th:if="${iswronglogin == true}">
+                    <span class="warning">Gebruikersnaam en/of wachtwoord is onjuist!</span>
+                </div>
                 <input class="button" th:type="submit" th:value="'Log in'">
             </form>
         </div>

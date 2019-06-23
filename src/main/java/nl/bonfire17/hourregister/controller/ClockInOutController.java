@@ -26,8 +26,10 @@ public class ClockInOutController {
         if (session.getAttribute("userId") != null) {
             for (int i = 0; i < this.users.size(); i++) {
                 if (session.getAttribute("userId").equals(this.users.get(i).id) && !this.users.get(i).isWorking()) {
+                    model.addAttribute("isadmin", this.users.get(i).isAdmin());
                     return "user/clockin";
                 } else if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isWorking()) {
+                    model.addAttribute("isadmin", this.users.get(i).isAdmin());
                     model.addAttribute("lastbreaktime", cookieValue);
                     return "user/clockout";
                 }

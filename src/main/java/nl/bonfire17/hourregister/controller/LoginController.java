@@ -25,17 +25,20 @@ public class LoginController {
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
 
     @GetMapping
-    public String login(HttpSession session) {
+    public String login(HttpSession session, Model model, @CookieValue(name = "isWrong", defaultValue = "false") boolean isWrong) {
         if (session.getAttribute("userId") != null){
             return "redirect:/clocksystem";
         }
+
+        model.addAttribute("iswronglogin", isWrong);
+
         return "index";
     }
 
     @PostMapping(path = "/logincheck")
     public RedirectView loginCheck(@RequestParam(name = "username") String username,
                                    @RequestParam(name = "password") String password,
-                                   HttpSession session) {
+                                   HttpSession session, HttpServletResponse response) {
 
         for (int i = 0; i < this.users.size(); i++) {
             if (username.equals(this.users.get(i).getUsername()) && password.equals(this.users.get(i).getPassword())) {
@@ -46,6 +49,9 @@ public class LoginController {
                 return new RedirectView("/clocksystem");
             }
         }
+        Cookie cookie = new Cookie("isWrong", "true");
+        cookie.setMaxAge(5);
+        response.addCookie(cookie);
         return new RedirectView("");
     }
 
