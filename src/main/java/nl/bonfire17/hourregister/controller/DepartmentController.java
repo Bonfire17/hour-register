@@ -7,6 +7,7 @@ import nl.bonfire17.hourregister.wrappers.TransferWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
 
@@ -16,45 +17,89 @@ public class DepartmentController {
 
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
 
-    @GetMapping
-    @ResponseBody
-    public ArrayList<Department> getDepartments() {
-        return departments;
-    }
+    //Admin
+    //Edit a existing department
+    @PostMapping(path = "/edit/{departmentId}")
+    public RedirectView editDepartment(@PathVariable(value = "departmentId", required = false) String id,
+                                       @RequestParam(value = "department-name", required = false) String name,
+                                       @RequestParam(value = "department-info", required = false, defaultValue = "") String info) {
+        boolean departmentValidated = true;
 
-    @PostMapping
-    @ResponseBody
-    public void addDepartment(@RequestBody Department department) {
-        departments.add(department);
-    }
+        Department department = DataProviderSingleton.getInstance().getDepartmentById(id);
 
-    @PutMapping
-    @ResponseBody
-    public void editDepartment(@RequestBody Department department) {
-        String id = department.getId();
+        //Check if the department exists
+        //Check if department-name is valid
+        if (department == null || !validateString(name)) {
+            departmentValidated = false;
+        }
 
-        for (int i = 0; i < departments.size(); i++) {
-            if (departments.get(i).getId().equals(id)) {
-                if (!department.getName().equals(null)) {
-                    departments.get(i).setName(department.getName());
-                }
-                if (!department.getInfo().equals(null)) {
-                    departments.get(i).setInfo(department.getInfo());
-                }
-            }
+        if(departmentValidated){
+            department.setName(name);
+            department.setInfo(info);
+            return new RedirectView("/administrator/department");
+        }else{
+            return new RedirectView("/department/error?msg=input");
         }
     }
 
-    @DeleteMapping
-    @ResponseBody
-    public void deleteDepartment(@RequestBody  Department department) {
-        String id = department.getId();
+    //Admin
+    //Add a new Department
+    @PostMapping(path = "/add")
+    public RedirectView editDepartment(@RequestParam(value = "department-name", required = false) String name,
+                                       @RequestParam(value = "department-info", required = false, defaultValue = "") String info) {
+        boolean departmentValidated = true;
 
-        for (int i = 0; i < departments.size(); i++) {
-            if (departments.get(i).getId().equals(id)) {
-                departments.remove(i);
-            }
+        //Check if the department exists
+        //Check if department-name is valid
+        if (!validateString(name)) {
+            departmentValidated = false;
         }
+
+        if(departmentValidated){
+            departments.add(new Department(name, info));
+            return new RedirectView("/administrator/department");
+        }else{
+            return new RedirectView("/department/error?msg=input");
+        }
+    }
+
+    //Admin
+    //Delete a existing department
+    @PostMapping(path = "/delete/{id}")
+    public RedirectView deleteDepartment(@PathVariable("id") String id){
+        Department department = DataProviderSingleton.getInstance().getDepartmentById(id);
+        //Check if the department exists
+        if(department != null){
+            //Loop all users of a department
+            for(User user: department.getUsers()){
+                user.getWorkdays().clear();
+            }
+            department.getUsers().clear();
+            departments.remove(department);
+            return new RedirectView("/administrator/department");
+        }
+        return new RedirectView("/department/error");
+    }
+
+    //Display a error msg
+    @GetMapping(path = "/error")
+    public String loadErrorPage(Model model, @RequestParam("msg") String msg){
+        switch (msg){
+            case "input":
+                model.addAttribute("message", "Uw ingevoerde gegevens kloppen niet!");
+                break;
+            default:
+                model.addAttribute("message", "O ow, er is hier iets niet pluis gegaan D:");
+                break;
+        }
+        return "/admin/error";
+    }
+
+    private boolean validateString(String string){
+        if(string != null && !string.equals("")){
+            return true;
+        }
+        return false;
     }
 }
 
