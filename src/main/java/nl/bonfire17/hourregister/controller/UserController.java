@@ -4,7 +4,6 @@ import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
-import nl.bonfire17.hourregister.wrappers.UserDepartmentWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +11,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 

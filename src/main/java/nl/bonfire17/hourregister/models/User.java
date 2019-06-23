@@ -1,15 +1,11 @@
 package nl.bonfire17.hourregister.models;
 
-import nl.bonfire17.hourregister.data.DataProviderSingleton;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.UUID;
 
 public class User {

@@ -1,24 +1,19 @@
 package nl.bonfire17.hourregister.controller;
 
 import nl.bonfire17.hourregister.data.DataProviderSingleton;
-import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.models.Workday;
-import nl.bonfire17.hourregister.wrappers.WorkdayUserWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
-import javax.xml.crypto.Data;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 
 /*
     Both the admin and a user should be able to access this controller. Some methods however should not be accessible by the user

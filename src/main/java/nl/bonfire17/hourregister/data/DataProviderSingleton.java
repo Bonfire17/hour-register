@@ -4,13 +4,11 @@ import nl.bonfire17.hourregister.models.Administrator;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
 import nl.bonfire17.hourregister.models.Workday;
-import nl.bonfire17.hourregister.wrappers.TransferWrapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class DataProviderSingleton {
 

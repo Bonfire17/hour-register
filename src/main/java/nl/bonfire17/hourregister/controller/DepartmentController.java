@@ -3,7 +3,6 @@ package nl.bonfire17.hourregister.controller;
 import nl.bonfire17.hourregister.data.DataProviderSingleton;
 import nl.bonfire17.hourregister.models.Department;
 import nl.bonfire17.hourregister.models.User;
-import nl.bonfire17.hourregister.wrappers.TransferWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
