@@ -44,12 +44,10 @@ public class ClockInOutController {
     public RedirectView clockin(HttpSession session) {
 
         String username = "N/A";
-
-        for (int i = 0; i < this.users.size(); i++) {
-            if (session.getAttribute("userId").equals(this.users.get(i).id) && !this.users.get(i).isWorking()) {
-                this.users.get(i).clockIn();
-                username = this.users.get(i).getUsername();
-            }
+        User user = DataProviderSingleton.getInstance().getUserById(session.getAttribute("userId").toString());
+        if (session.getAttribute("userId").equals(user.id) && !user.isWorking()) {
+            user.clockIn();
+            username = user.getUsername();
         }
         return new RedirectView("/clocksystem?username=" + username);
     }
@@ -60,18 +58,17 @@ public class ClockInOutController {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         String username = "N/A";
 
-        for (int i = 0; i < this.users.size(); i++) {
-            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isWorking()) {
+        User user = DataProviderSingleton.getInstance().getUserById(session.getAttribute("userId").toString());
+        if (user != null && user.isWorking()) {
 
-                if (breaktime != null) {
-                    this.users.get(i).clockOut(LocalTime.parse(breaktime, timeFormatter));
-                    Cookie cookie = new Cookie("lastbreaktime", breaktime);
-                    response.addCookie(cookie);
-                } else {
-                    this.users.get(i).clockOut(LocalTime.parse("00:00", timeFormatter));
-                }
-                username = this.users.get(i).getUsername();
+            if (breaktime != null) {
+                user.clockOut(LocalTime.parse(breaktime, timeFormatter));
+                Cookie cookie = new Cookie("lastbreaktime", breaktime);
+                response.addCookie(cookie);
+            } else {
+                user.clockOut(LocalTime.parse("00:00", timeFormatter));
             }
+            username = user.getUsername();
         }
         return new RedirectView("/clocksystem?username=" + username);
     }

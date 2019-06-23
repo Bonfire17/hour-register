@@ -123,7 +123,7 @@ public class AdminController {
 
             if (isAdmin) {
                 Workday workday = null;
-                for (Workday workdayTemp : workdays) {
+                for (Workday workdayTemp : DataProviderSingleton.getInstance().getWorkdays()) {
                     if (workdayTemp.id.equals(id)) {
                         workday = workdayTemp;
                     }
