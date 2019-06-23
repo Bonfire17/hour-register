@@ -15,7 +15,6 @@ import java.util.ArrayList;
 public class DepartmentController {
 
     private ArrayList<Department> departments = DataProviderSingleton.getInstance().getDepartments();
-    private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
 
     @GetMapping
     @ResponseBody

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+    <div th:replace="fragments/head :: head"></div>
+    <body>
+        <div class="content flex-container">
+            <div class="item flex-item">
+                <div class="item-content-wrapper">
+                    <div class="form-row warning-box">
+                        <span class="warning" th:text="${message}">Error MSG</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

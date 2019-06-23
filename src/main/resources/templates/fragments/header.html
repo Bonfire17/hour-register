@@ -3,6 +3,10 @@
     <body>
     <div th:fragment="header" class="header-div">
         <h1 class="header-head">Admin Paneel</h1>
+        <!-- TODO: Bind logout action <- Bryan -->
+        <form class="form-header" method="Get" th:action="@{/logout}">
+            <input class="button header-button" type="submit" value="Uitloggen">
+        </form>
     </div>
     </body>
 </html>
