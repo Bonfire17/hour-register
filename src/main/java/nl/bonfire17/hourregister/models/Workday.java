@@ -131,7 +131,7 @@ public class Workday {
     //End Processing Data
 
     public String toString(){
-        return getStartTimeFormated() + " " + getEndTimeFormated() + " " + getBreakTimeFormated() + " " + getDateFormated();
+        return getStartTimeFormated();
     }
 
 

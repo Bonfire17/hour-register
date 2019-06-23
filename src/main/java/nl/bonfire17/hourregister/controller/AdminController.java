@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /*
-    Only the admin should jave access to the controller. All admin panel getters are here!
+    Only the admin should have access to the controller. All admin panel getters are here!
  */
 
 @Controller
@@ -285,7 +285,7 @@ public class AdminController {
         Department GetMapping
      */
 
-    //Load all workdays per user
+    //Load all departments
     @GetMapping(path = "/department")
     public String defaultDepartmentPage(Model model){
         ArrayList<HashMap<String, String>> sendData = getDepartmentHashMapArray(departments);
@@ -293,6 +293,27 @@ public class AdminController {
         model.addAttribute("header", "Afdelingen");
         return "admin/department-overview";
     }
+
+    //Load a department by id in a edit form
+    @GetMapping(path = "/department/{id}")
+    public String loadEditDepartmentForm(Model model, @PathVariable("id") String id){
+        Department department = DataProviderSingleton.getInstance().getDepartmentById(id);
+        model.addAttribute("id", id);
+        model.addAttribute("name", department.getName());
+        model.addAttribute("info", department.getInfo());
+        model.addAttribute("add", false);
+        model.addAttribute("action", "/department/edit/"+id);
+        return "admin/department";
+    }
+
+    //Load a add department form
+    @GetMapping(path = "/department/add")
+    public String loadAddDepartmentForm(Model model){
+        model.addAttribute("add", true);
+        model.addAttribute("action", "/department/add");
+        return "admin/department";
+    }
+
 
     /*
         Department Methods
