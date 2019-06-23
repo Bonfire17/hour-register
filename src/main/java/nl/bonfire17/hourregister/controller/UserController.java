@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -34,7 +35,12 @@ public class UserController {
                         @RequestParam(name = "date-of-birth") String dateOfBirth,
                         @RequestParam(name = "administrator", required = false) String administrator,
                         @RequestParam(name = "password") String password,
-                        @RequestParam(name = "department") String departmentId) {
+                        @RequestParam(name = "department") String departmentId, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("");//error
+        }
+
         if(administrator != null) {
             DataProviderSingleton.getInstance().getDepartmentById(departmentId).addUser(new Administrator(username, email, firstname, lastname, password, LocalDate.parse(dateOfBirth)));
         }else{
@@ -54,7 +60,11 @@ public class UserController {
                                  @RequestParam(name = "date-of-birth") String dateOfBirth,
                                  @RequestParam(name = "administrator", required = false) String administrator,
                                  @RequestParam(name = "old-password", required = false) String oldPassword,
-                                 @RequestParam(name = "new-password", required = false) String newPassword) {
+                                 @RequestParam(name = "new-password", required = false) String newPassword, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("");//error
+        }
 
         User user = DataProviderSingleton.getInstance().getUserById(id);
         user.setUsername(username);
@@ -79,7 +89,11 @@ public class UserController {
     //Admin
     //Transfer a user from one department to another
     @PostMapping(path = "/transfer/{id}")
-    public RedirectView transferUser(@PathVariable(name = "id") String id, @RequestParam(name = "department") String targetDepartment) {
+    public RedirectView transferUser(@PathVariable(name = "id") String id, @RequestParam(name = "department") String targetDepartment, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("");//error
+        }
         Department oldDepartment, newDepartment;
         User transferUser;
 
@@ -101,7 +115,11 @@ public class UserController {
     //Admin
     //Delete a user
     @PostMapping(path = "/delete/{id}")
-    public RedirectView transferUser(@PathVariable(name = "id") String id) {
+    public RedirectView transferUser(@PathVariable(name = "id") String id, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("");//error
+        }
         for(Department department: departments) {
             for (int i = 0; i < department.getUsers().size(); i++) {
                 if (department.getUsers().get(i).id.equals(id)) {
@@ -117,6 +135,15 @@ public class UserController {
             }
         }
         return new RedirectView("/administrator/user");
+    }
+
+    public boolean checkAdmin(HttpSession session) {
+        for (int i = 0; i < this.users.size(); i++) {
+            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

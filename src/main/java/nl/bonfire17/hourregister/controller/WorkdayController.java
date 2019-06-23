@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpSession;
 import javax.xml.crypto.Data;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -37,7 +38,11 @@ public class WorkdayController {
                                    @RequestParam(name = "end-time", required = false) String endtime,
                                    @RequestParam(name = "break-time", required = false) String breaktime,
                                    @RequestParam(name = "validated", required = false) String validated,
-                                   @PathVariable("workdayId") String id) {
+                                   @PathVariable("workdayId") String id, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("");//error
+        }
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -65,7 +70,11 @@ public class WorkdayController {
     //Admin
     //Delete a existing workday
     @PostMapping(path = "/delete/{workdayId}")
-    public RedirectView deleteWorkday(@PathVariable("workdayId") String id) {
+    public RedirectView deleteWorkday(@PathVariable("workdayId") String id, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return new RedirectView("");//error
+        }
         System.out.println(id);
         for (int i = 0; i < workdays.size(); i++) {
             if (workdays.get(i).getId().equals(id)) {
@@ -80,5 +89,14 @@ public class WorkdayController {
             }
         }
         return new RedirectView("/administrator/workday");
+    }
+
+    public boolean checkAdmin(HttpSession session) {
+        for (int i = 0; i < this.users.size(); i++) {
+            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
