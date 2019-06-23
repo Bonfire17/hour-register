@@ -29,6 +29,8 @@ public class LoginController {
 
         String username = "N/A";
 
+        System.out.println("test");
+
         if (session.getAttribute("userId") != null){
             for (int i = 0; i < this.users.size(); i++) {
                 if (session.getAttribute("userId").equals(this.users.get(i).id)) {
