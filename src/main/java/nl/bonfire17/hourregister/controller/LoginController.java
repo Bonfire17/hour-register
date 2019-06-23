@@ -24,6 +24,7 @@ public class LoginController {
 
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
 
+    //Used for login screen
     @GetMapping
     public String login(HttpSession session, Model model, @CookieValue(name = "isWrong", defaultValue = "false") boolean isWrong) {
 
@@ -44,6 +45,7 @@ public class LoginController {
         return "index";
     }
 
+    //Checks if you entered the right username/password
     @PostMapping(path = "/logincheck")
     public RedirectView loginCheck(@RequestParam(name = "username") String username,
                                    @RequestParam(name = "password") String password,

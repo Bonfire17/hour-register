@@ -21,6 +21,7 @@ public class ClockInOutController {
 
     private ArrayList<User> users = DataProviderSingleton.getInstance().getUsers();
 
+    //Checks if you are clocked in and sends you to the right page.
     @GetMapping
     public String defaultUserPage(HttpSession  session, Model model, @CookieValue(value = "lastbreaktime", defaultValue = "00:00") String cookieValue, @RequestParam("username") String value){
         if (session.getAttribute("userId") != null) {
@@ -40,6 +41,7 @@ public class ClockInOutController {
         return "redirect:/";
     }
 
+    //Clocks you in
     @PostMapping(path = "/clockin")
     public RedirectView clockin(HttpSession session) {
 
@@ -54,6 +56,7 @@ public class ClockInOutController {
         return new RedirectView("/clocksystem?username=" + username);
     }
 
+    //Clocks you out
     @PostMapping(path = "/clockout")
     public RedirectView clockout (HttpSession session, HttpServletResponse response, @RequestParam(name = "break", required = false) String breaktime) {
 
