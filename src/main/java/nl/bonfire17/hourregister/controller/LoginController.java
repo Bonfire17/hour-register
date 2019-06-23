@@ -26,8 +26,17 @@ public class LoginController {
 
     @GetMapping
     public String login(HttpSession session, Model model, @CookieValue(name = "isWrong", defaultValue = "false") boolean isWrong) {
+
+        String username = "N/A";
+
         if (session.getAttribute("userId") != null){
-            return "redirect:/clocksystem";
+            for (int i = 0; i < this.users.size(); i++) {
+                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
+
+                    username = this.users.get(i).getUsername();
+                    return "redirect:/clocksystem?username=" + username;
+                }
+            }
         }
 
         model.addAttribute("iswronglogin", isWrong);
