@@ -8,6 +8,7 @@ import nl.bonfire17.hourregister.models.Workday;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /*
-    Only the admin should jave access to the controller. All admin panel getters are here!
+    Only the admin should have access to the controller. All admin panel getters are here!
  */
 
 @Controller
@@ -39,109 +40,75 @@ public class AdminController {
 
     //Load default admin page
     @GetMapping
-    public String defaultPage(Model model, HttpSession session){
-        defaultWorkdayPage(model, session);
+    public String defaultPage(Model model, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                return "admin/workday-overview";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        defaultWorkdayPage(model, session);
+        return "admin/workday-overview";
     }
 
     //Load all workdays per user
     @GetMapping(path = "/workday")
-    public String defaultWorkdayPage(Model model, HttpSession session){
+    public String defaultWorkdayPage(Model model, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(users);
-                model.addAttribute("workdays", sendData);
-                model.addAttribute("header", "Werkdagen");
-                return "admin/workday-overview";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(users);
+        model.addAttribute("workdays", sendData);
+        model.addAttribute("header", "Werkdagen");
+        return "admin/workday-overview";
     }
 
     //Load all workdays that are not validated
     @GetMapping(path = "/workday/unvalidated")
-    public String loadUnvalidatedWorkdays(Model model, HttpSession session){
+    public String loadUnvalidatedWorkdays(Model model, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(users, AdminController.UNVALIDATED);
-                model.addAttribute("workdays", sendData);
-                model.addAttribute("header", "Ongevalideerde Werkdagen");
-                return "admin/workday-overview";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(users, AdminController.UNVALIDATED);
+        model.addAttribute("workdays", sendData);
+        model.addAttribute("header", "Ongevalideerde Werkdagen");
+        return "admin/workday-overview";
+    }
+
+    //Load all workdays for of a specific user
+    @GetMapping(path = "/workday/user/{userId}")
+    public String loadUserWorkdays(Model model, @PathVariable("userId") String id){
+        User user = DataProviderSingleton.getInstance().getUserById(id);
+        ArrayList<HashMap<String, String>> sendData = getWorkdayHashMapArray(user);
+        model.addAttribute("workdays", sendData);
+        model.addAttribute("header", "Gebruiker: " + user.getFirstname());
+        return "admin/workday-overview";
     }
 
     //Load specific workday by id
     @GetMapping(path = "/workday/{workdayId}")
-    public String loadWorkday(Model model, @PathVariable("workdayId") String id, HttpSession session){
+    public String loadWorkday(Model model, @PathVariable("workdayId") String id, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                Workday workday = null;
-                for (Workday workdayTemp : DataProviderSingleton.getInstance().getWorkdays()) {
-                    if (workdayTemp.id.equals(id)) {
-                        workday = workdayTemp;
-                    }
-                }
-                model.addAttribute("startdate", workday.getStartDateUnix());
-                model.addAttribute("starttime", workday.getStartTimeUnix());
-                model.addAttribute("isWorking", workday.isWorking());
-                if (!workday.isWorking()) {
-                    model.addAttribute("enddate", workday.getEndDateUnix());
-                    model.addAttribute("endtime", workday.getEndTimeUnix());
-                    model.addAttribute("breaktime", workday.getBreakTimeUnix());
-                    model.addAttribute("validated", workday.getValidated());
-                }
-                model.addAttribute("id", workday.id);
-                return "admin/workday";
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
+        }
+        Workday workday = null;
+        for(Workday workdayTemp: DataProviderSingleton.getInstance().getWorkdays()){
+            if(workdayTemp.id.equals(id)){
+                workday = workdayTemp;
             }
         }
-        return "redirect:/";
+        model.addAttribute("startdate", workday.getStartDateUnix());
+        model.addAttribute("starttime", workday.getStartTimeUnix());
+        model.addAttribute("isWorking", workday.isWorking());
+        if(!workday.isWorking()){
+            model.addAttribute("enddate", workday.getEndDateUnix());
+            model.addAttribute("endtime", workday.getEndTimeUnix());
+            model.addAttribute("breaktime", workday.getBreakTimeUnix());
+            model.addAttribute("validated", workday.getValidated());
+        }
+        model.addAttribute("id", workday.id);
+        return "admin/workday";
     }
 
     /*
@@ -169,6 +136,17 @@ public class AdminController {
         return getWorkdayHashMapArray(users, AdminController.ALLWORKAYS);
     }
 
+    //Same method but with a single user parameter
+    private ArrayList<HashMap<String, String>> getWorkdayHashMapArray(User user){
+        ArrayList<HashMap<String, String>> sendData = new ArrayList<>();
+        ArrayList<Workday> workdays = user.getWorkdays();
+        for(Workday workday: workdays){
+            sendData.add(loadWorkdayHashmap(user, workday));
+        }
+        return sendData;
+    }
+
+
     //Load user data into a HashMap
     private HashMap<String, String> loadWorkdayHashmap(User user, Workday workday){
         HashMap<String, String> map = new HashMap<>();
@@ -190,157 +168,91 @@ public class AdminController {
 
     //Load all users and administrators
     @GetMapping(path = "/user")
-    public String defaultUserPage(Model model, HttpSession session){
+    public String defaultUserPage(Model model, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments);
-                model.addAttribute("users", sendData);
-                model.addAttribute("header", "Gerbuikers");
-                return "admin/user-overview";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments);
+        model.addAttribute("users", sendData);
+        model.addAttribute("header", "Gerbuikers");
+        return "admin/user-overview";
     }
 
     //Load all administrators
     @GetMapping(path = "/user/admin")
-    public String loadAdministrators(Model model, HttpSession session){
+    public String loadAdministrators(Model model, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments, AdminController.ADMIN);
-                model.addAttribute("users", sendData);
-                model.addAttribute("header", "Administratoren");
-                return "admin/user-overview";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments, AdminController.ADMIN);
+        model.addAttribute("users", sendData);
+        model.addAttribute("header", "Administratoren");
+        return "admin/user-overview";
     }
 
     //Load all users and administrators that are currently working
     @GetMapping(path = "/user/working")
-    public String loadUsersThatAreWorking(Model model, HttpSession session){
+    public String loadUsersThatAreWorking(Model model, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments, AdminController.ISWORKING);
-                model.addAttribute("users", sendData);
-                model.addAttribute("header", "Actieve mederwerkers");
-                return "admin/user-overview";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(departments, AdminController.ISWORKING);
+        model.addAttribute("users", sendData);
+        model.addAttribute("header", "Actieve mederwerkers");
+        return "admin/user-overview";
     }
 
     //Load all users from a department
     @GetMapping(path = "/user/department/{departmentId}")
-    public String loadUsersByDepartment(Model model, @PathVariable("departmentId") String departmentId, HttpSession session){
+    public String loadUsersByDepartment(Model model, @PathVariable("departmentId") String departmentId, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                Department department = DataProviderSingleton.getInstance().getDepartmentById(departmentId);
-                ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(department);
-                model.addAttribute("users", sendData);
-                model.addAttribute("header", "Department: " + department.getName());
-                return "admin/user-overview";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        Department department = DataProviderSingleton.getInstance().getDepartmentById(departmentId);
+        ArrayList<HashMap<String, String>> sendData = getUserHashMapArray(department);
+        model.addAttribute("users", sendData);
+        model.addAttribute("header", "Department: " + department.getName());
+        return "admin/user-overview";
     }
 
     //Load user by id
     @GetMapping(path = "/user/{id}")
-    public String loadUser(Model model, @PathVariable("id") String id, HttpSession session){
+    public String loadUser(Model model, @PathVariable("id") String id, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                User user = DataProviderSingleton.getInstance().getUserById(id);
-                model.addAttribute("add", false);
-                model.addAttribute("username", user.getUsername());
-                model.addAttribute("email", user.getEmail());
-                model.addAttribute("firstname", user.getFirstname());
-                model.addAttribute("lastname", user.getLastname());
-                model.addAttribute("dateOfBirth", user.getDateOfBirthUnix());
-                model.addAttribute("administrator", user instanceof Administrator);
-                model.addAttribute("action", "/user/edit/" + user.id);
-                model.addAttribute("departments", getDepartmentData());
-                model.addAttribute("header", "Gebruiker Aanpassen");
-                return "admin/user";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        User user = DataProviderSingleton.getInstance().getUserById(id);
+        model.addAttribute("add", false);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("email", user.getEmail());
+        model.addAttribute("firstname", user.getFirstname());
+        model.addAttribute("lastname", user.getLastname());
+        model.addAttribute("dateOfBirth", user.getDateOfBirthUnix());
+        model.addAttribute("administrator",  user instanceof Administrator);
+        model.addAttribute("action", "/user/edit/" + user.id);
+        model.addAttribute("departments", getDepartmentData());
+        model.addAttribute("header", "Gebruiker Aanpassen");
+        return "admin/user";
     }
 
     //Get add user form
     @GetMapping(path = "/user/add")
-    public String loadAddUserForm(Model model, HttpSession session){
+    public String loadAddUserForm(Model model, HttpSession session) {
 
-        boolean isAdmin = false;
-
-        if (session.getAttribute("userId") != null) {
-
-            for (int i = 0; i < this.users.size(); i++) {
-                if (session.getAttribute("userId").equals(this.users.get(i).id)) {
-                    isAdmin = this.users.get(i).isAdmin();
-                }
-            }
-
-            if (isAdmin) {
-                ArrayList<HashMap<String, String>> departmentData = getDepartmentData();
-                model.addAttribute("add", true);
-                model.addAttribute("action", "/user/add");
-                model.addAttribute("departments", getDepartmentData());
-                model.addAttribute("header", "Gebruiker Toevoegen");
-                return "/admin/user";
-            }
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
         }
-        return "redirect:/";
+        ArrayList<HashMap<String, String>> departmentData = getDepartmentData();
+        model.addAttribute("add", true);
+        model.addAttribute("action", "/user/add");
+        model.addAttribute("departments", getDepartmentData());
+        model.addAttribute("header", "Gebruiker Toevoegen");
+        return "/admin/user";
     }
 
 
@@ -409,5 +321,78 @@ public class AdminController {
         map.put("isWorking", user.isWorking() ? "Ja" : "Nee");
         map.put("isAdmin", user.isAdmin() ? "Ja" : "Nee");
         return map;
+    }
+
+    /*
+        Department GetMapping
+     */
+
+    //Load all departments
+    @GetMapping(path = "/department")
+    public String defaultDepartmentPage(Model model, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
+        }
+        ArrayList<HashMap<String, String>> sendData = getDepartmentHashMapArray(departments);
+        model.addAttribute("departments", sendData);
+        model.addAttribute("header", "Afdelingen");
+        return "admin/department-overview";
+    }
+
+    //Load a department by id in a edit form
+    @GetMapping(path = "/department/{id}")
+    public String loadEditDepartmentForm(Model model, @PathVariable("id") String id, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
+        }
+        Department department = DataProviderSingleton.getInstance().getDepartmentById(id);
+        model.addAttribute("id", id);
+        model.addAttribute("name", department.getName());
+        model.addAttribute("info", department.getInfo());
+        model.addAttribute("add", false);
+        model.addAttribute("action", "/department/edit/"+id);
+        return "admin/department";
+    }
+
+    //Load a add department form
+    @GetMapping(path = "/department/add")
+    public String loadAddDepartmentForm(Model model, HttpSession session) {
+
+        if (!checkAdmin(session)) {
+            return "redirect:/";//error
+        }
+        model.addAttribute("add", true);
+        model.addAttribute("action", "/department/add");
+        return "admin/department";
+    }
+
+
+    /*
+        Department Methods
+     */
+
+    private ArrayList<HashMap<String, String>> getDepartmentHashMapArray(ArrayList<Department> departments){
+        ArrayList<HashMap<String, String>> data = new ArrayList<>();
+        for(Department department: departments){
+            HashMap<String, String> map = new HashMap<>();
+            map.put("id", department.id);
+            map.put("name", department.getName());
+            map.put("info", department.getInfo());
+            map.put("userCount", Integer.toString(department.getUserCount()));
+            data.add(map);
+        }
+        return data;
+    }
+
+    //Checks if current user is admin
+    public boolean checkAdmin(HttpSession session) {
+        for (int i = 0; i < this.users.size(); i++) {
+            if (session.getAttribute("userId").equals(this.users.get(i).id) && this.users.get(i).isAdmin()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

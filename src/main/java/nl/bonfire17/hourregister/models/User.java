@@ -70,7 +70,7 @@ public class User {
     //Clock user out, return if successful
     public boolean clockOut(LocalTime breakTime){
         if(currentWorkday != null) {
-            currentWorkday.clockOut(LocalDateTime.now(), breakTime);
+            currentWorkday.clockOut(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), breakTime);
             currentWorkday = null;
             return true;
         }
