@@ -24,10 +24,11 @@ public class DataProviderSingleton {
         departments.add(new Department("Restaurant Bediening", "Alle restaurant medewerkers"));
         departments.add(new Department("ICT", "Alle ict medewerkers"));
 
-        departments.get(0).getUsers().add(new User("Bonfire17", "bertus@gmail.com", "Bert", "Bonkers", "test123", LocalDate.of(1998, 6, 27)));
-        departments.get(0).getUsers().add(new User("JJVoort", "jj@hotmail.com", "Jay", "Jay", "wachtwoord", LocalDate.of(2000, 5, 13)));
-        departments.get(0).getUsers().add(new Administrator("Admin420", "restaurantadmin@gmail.com", "Hans", "Jansen", "Admin85", LocalDate.of(1997, 2, 1)));
-        departments.get(0).getUsers().add(new Administrator("Admin580", "restaurantadmin2@gmail.com", "Pieter", "Jan Coen", "Admin85aa", LocalDate.of(1995, 5, 8)));
+        departments.get(0).getUsers().add(new User("User1", "userone@gmail.com", "Bert", "Jansen", "User1", LocalDate.of(1998, 6, 27)));
+        departments.get(0).getUsers().add(new User("User2", "usertwo@gmail.com", "Jay", "Wit", "User2", LocalDate.of(2000, 5, 13)));
+        departments.get(0).getUsers().add(new User("User3", "userthree@hotmail.com", "Jan", "Bertus", "User3", LocalDate.of(1999, 7, 16)));
+        departments.get(0).getUsers().add(new Administrator("Admin1", "adminone@gmail.com", "Hans", "Jansen", "Admin1", LocalDate.of(1997, 2, 1)));
+        departments.get(0).getUsers().add(new Administrator("Admin2", "admintwo@gmail.com", "Pieter", "Jan Coen", "Admin2", LocalDate.of(1995, 5, 8)));
 
         departments.get(0).getUser(2).clockIn();
 
